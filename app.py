@@ -4,7 +4,10 @@ from pathlib import Path
 
 import streamlit as st
 
-# ---------- Load question bank ----------
+# =========================================================
+# Load question bank
+# =========================================================
+
 def load_questions(path: Path):
     if not path.exists():
         st.error(f"questions.json not found at: {path}")
@@ -24,25 +27,23 @@ def load_questions(path: Path):
 QUESTIONS = load_questions(Path("questions.json"))
 Q_BY_ID = {q["id"]: q for q in QUESTIONS}
 
-# ---------- Session state ----------
-# Each selected item is an *instance* id, e.g. "M2760_TRIG_001#3"
-if "selected_instances" not in st.session_state:
-    st.session_state["selected_instances"] = []
+# =========================================================
+# Session state
+# =========================================================
+# Each element of "instances" is a dict:
+#   {"qid": <question id>, "variant": <int or None>}
+# so the same question can appear multiple times with different variants.
+if "instances" not in st.session_state:
+    st.session_state["instances"] = []
 
-# Map instance_id -> chosen variant index (for non-static questions)
-if "selected_variants" not in st.session_state:
-    st.session_state["selected_variants"] = {}
+instances = st.session_state["instances"]
 
-# Counter used to make unique instance ids
-if "instance_counter" not in st.session_state:
-    st.session_state["instance_counter"] = 0
+# =========================================================
+# Helper functions for metadata / topics
+# =========================================================
 
-selected_instances = st.session_state["selected_instances"]
-selected_variants = st.session_state["selected_variants"]
-
-# ---------- Helper: topics ----------
 def get_question_topics(q):
-    # Prefer list in "topics"; fall back to single "topic"
+    """Return list of topics for a question."""
     if "topics" in q and isinstance(q["topics"], list):
         return q["topics"]
     t = q.get("topic")
@@ -50,14 +51,17 @@ def get_question_topics(q):
 
 
 def get_label_topic(q):
-    # For display in lists
+    """Single label for display (first topic or 'Untitled')."""
     if "topic" in q and q["topic"]:
         return q["topic"]
     topics = get_question_topics(q)
     return topics[0] if topics else "Untitled"
 
 
-# ---------- Filters in sidebar ----------
+# =========================================================
+# Sidebar filters
+# =========================================================
+
 st.sidebar.title("TestGen Lite (Web)")
 
 if not QUESTIONS:
@@ -70,7 +74,7 @@ else:
     course_filter = st.sidebar.multiselect(
         "Course",
         options=all_courses,
-        default=all_courses if all_courses else []
+        default=all_courses if all_courses else [],
     )
 
     # Static / Non-static
@@ -88,31 +92,33 @@ else:
     qtype_filter = st.sidebar.multiselect(
         "Question type",
         options=all_qtypes,
-        default=all_qtypes if all_qtypes else []
+        default=all_qtypes if all_qtypes else [],
     )
 
-    # Topics – **unselected by default** (means “no topic filter”)
+    # Topics – unselected by default, but if empty we don't filter by topic
     all_topics = sorted(
         {t for q in QUESTIONS for t in get_question_topics(q)}
     )
     topic_filter = st.sidebar.multiselect(
         "Topics",
         options=all_topics,
-        default=[],   # <- nothing selected by default
+        default=[],   # nothing selected initially
     )
 
     # Text search
     search_text = st.sidebar.text_input("Search in question text", value="")
 
+# =========================================================
+# Filtering logic
+# =========================================================
 
-# ---------- Helper functions ----------
 def question_matches_filters(q):
     # Courses
     q_courses = q.get("courses", [])
     if course_filter and not any(c in course_filter for c in q_courses):
         return False
 
-    # Static / non-static
+    # Static / Non-static
     is_static = q.get("static", True)
     if "Static" not in static_filter and is_static:
         return False
@@ -124,12 +130,13 @@ def question_matches_filters(q):
     if qtype_filter and not any(t in qtype_filter for t in q_qtypes):
         return False
 
-    # Topics – only filter if user picked something
+    # Topics
     q_topics = get_question_topics(q)
+    # If topic_filter is empty, don't restrict by topic
     if topic_filter and not any(t in topic_filter for t in q_topics):
         return False
 
-    # Search text
+    # Text search
     if search_text.strip():
         s = search_text.lower()
         if s not in q.get("text", "").lower():
@@ -143,104 +150,99 @@ def filtered_questions():
         return []
     return [q for q in QUESTIONS if question_matches_filters(q)]
 
+# =========================================================
+# Manipulating instances (questions in the current test)
+# =========================================================
 
 def add_to_test(ids_to_add):
-    """Add one *instance* per qid. Duplicates are allowed."""
+    """Add one instance per qid (allowing duplicates).
+
+    For non-static questions with variants, choose a variant index
+    each time the question is added.
+    """
     for qid in ids_to_add:
-        if qid not in Q_BY_ID:
+        q = Q_BY_ID.get(qid)
+        if not q:
             continue
-        # Create unique instance id
-        inst_id_num = st.session_state["instance_counter"]
-        instance_id = f"{qid}#{inst_id_num}"
-        st.session_state["instance_counter"] += 1
 
-        st.session_state["selected_instances"].append(instance_id)
-
-        # If question is non-static with variants, choose one variant index
-        q = Q_BY_ID[qid]
+        variant_idx = None
         if not q.get("static", True) and "variants" in q:
-            variants = q["variants"]
+            variants = q.get("variants", [])
             if isinstance(variants, list) and variants:
-                idx = random.randrange(len(variants))
-                st.session_state["selected_variants"][instance_id] = idx
+                variant_idx = random.randrange(len(variants))
+
+        instances.append({"qid": qid, "variant": variant_idx})
 
 
 def move_up(index):
-    if index <= 0 or index >= len(st.session_state["selected_instances"]):
+    if index <= 0 or index >= len(instances):
         return
-    instances = st.session_state["selected_instances"]
     instances[index - 1], instances[index] = instances[index], instances[index - 1]
 
 
 def move_down(index):
-    if index < 0 or index >= len(st.session_state["selected_instances"]) - 1:
+    if index < 0 or index >= len(instances) - 1:
         return
-    instances = st.session_state["selected_instances"]
     instances[index + 1], instances[index] = instances[index], instances[index + 1]
 
 
 def remove_from_test(index):
-    instances = st.session_state["selected_instances"]
     if 0 <= index < len(instances):
-        instance_id = instances[index]
         instances.pop(index)
-        # Remove any stored variant choice
-        if instance_id in st.session_state["selected_variants"]:
-            del st.session_state["selected_variants"][instance_id]
 
 
-def get_instance(instance_id):
-    """Return the 'instance' of a question (with variant applied if needed)."""
-    # instance_id looks like "QID#3"
-    qid = instance_id.split("#", 1)[0]
-    q = Q_BY_ID.get(qid)
-    if not q:
+def get_instance_question(inst_obj):
+    """Return the concrete question (with variant applied if needed)."""
+    qid = inst_obj["qid"]
+    base = Q_BY_ID.get(qid)
+    if not base:
         return None
 
-    is_static = q.get("static", True)
-    if is_static or "variants" not in q:
-        return q
+    variant_idx = inst_obj.get("variant", None)
+    variants = base.get("variants", [])
 
-    variants = q.get("variants", [])
-    if not variants:
-        return q
+    if variant_idx is None or base.get("static", True) or not variants:
+        # Static or no variants: just use base
+        return base
 
-    idx = st.session_state["selected_variants"].get(instance_id, 0)
-    idx = max(0, min(idx, len(variants) - 1))
-    variant = variants[idx]
+    # Non-static with variants: override text/solution with chosen variant
+    variant = variants[variant_idx]
+    q = dict(base)  # shallow copy metadata
+    q["text"] = variant.get("text", base.get("text", ""))
+    q["solution"] = variant.get("solution", base.get("solution", ""))
+    return q
 
-    # Shallow copy base metadata but override text/solution
-    inst = dict(q)
-    inst["text"] = variant.get("text", q.get("text", ""))
-    inst["solution"] = variant.get("solution", q.get("solution", ""))
-    return inst
-
+# =========================================================
+# Markdown export
+# =========================================================
 
 def make_test_markdown():
     lines = ["# Test", ""]
-    for i, instance_id in enumerate(st.session_state["selected_instances"], start=1):
-        inst = get_instance(instance_id)
-        if not inst:
+    for i, inst_obj in enumerate(instances, start=1):
+        inst_q = get_instance_question(inst_obj)
+        if not inst_q:
             continue
-        lines.append(f"{i}. {inst.get('text', '')}")
+        lines.append(f"{i}. {inst_q.get('text', '')}")
         lines.append("")
     return "\n".join(lines)
 
 
 def make_key_markdown():
     lines = ["# Answer Key", ""]
-    for i, instance_id in enumerate(st.session_state["selected_instances"], start=1):
-        inst = get_instance(instance_id)
-        if not inst:
+    for i, inst_obj in enumerate(instances, start=1):
+        inst_q = get_instance_question(inst_obj)
+        if not inst_q:
             continue
-        lines.append(f"{i}. {inst.get('text', '')}")
+        lines.append(f"{i}. {inst_q.get('text', '')}")
         lines.append("")
-        lines.append(f"**Solution:** {inst.get('solution', '')}")
+        lines.append(f"**Solution:** {inst_q.get('solution', '')}")
         lines.append("")
     return "\n".join(lines)
 
+# =========================================================
+# Layout
+# =========================================================
 
-# ---------- Layout ----------
 st.title("TestGen Lite – Question Picker + Answer Key")
 
 if not QUESTIONS:
@@ -248,7 +250,9 @@ if not QUESTIONS:
 
 col_bank, col_test = st.columns(2)
 
-# ----- Left column: question bank -----
+# ---------------------------------------------------------
+# Left column: Question bank + preview
+# ---------------------------------------------------------
 with col_bank:
     st.subheader("Question Bank")
 
@@ -275,71 +279,74 @@ with col_bank:
             ids_to_add = [id_by_label[label] for label in selected_labels]
             add_to_test(ids_to_add)
 
-with st.expander("Preview from bank"):
-    preview_label = st.selectbox(
-        "Choose a question to preview",
-        options=["(none)"] + options,
-        key="bank_preview_select",
-    )
-    if preview_label != "(none)":
-        qid = id_by_label[preview_label]
-        base = Q_BY_ID.get(qid)
-        if base:
-            is_static = base.get("static", True)
-            variants = base.get("variants", [])
-
-            st.markdown(f"**ID:** {base['id']}")
-            st.markdown(f"**Courses:** {', '.join(base.get('courses', [])) or '—'}")
-            st.markdown(f"**Types:** {', '.join(base.get('qtypes', [])) or '—'}")
-            st.markdown(f"**Topics:** {', '.join(get_question_topics(base)) or '—'}")
-
-            st.markdown(
-                f"**Static / Non-static:** "
-                f"{'Static' if is_static else 'Non-static (algorithmic)'}"
+        # Preview block stays right here in the left column
+        with st.expander("Preview from bank"):
+            preview_label = st.selectbox(
+                "Choose a question to preview",
+                options=["(none)"] + options,
+                key="bank_preview_select",
             )
+            if preview_label != "(none)":
+                qid = id_by_label[preview_label]
+                base = Q_BY_ID.get(qid)
+                if base:
+                    is_static = base.get("static", True)
+                    variants = base.get("variants", [])
 
-            # Show an example question + solution
-            if is_static or base.get("text"):
-                st.markdown("**Question:**")
-                st.markdown(base.get("text", ""))
-                st.markdown("**Solution:**")
-                st.markdown(base.get("solution", ""))
-            else:
-                # Non-static with only variants: preview the first one
-                if variants:
-                    example = variants[0]
-                    st.markdown("**Question (example variant):**")
-                    st.markdown(example.get("text", ""))
+                    st.markdown(f"**ID:** {base['id']}")
+                    st.markdown(
+                        f"**Courses:** "
+                        f"{', '.join(base.get('courses', [])) or '—'}"
+                    )
+                    st.markdown(
+                        f"**Types:** "
+                        f"{', '.join(base.get('qtypes', [])) or '—'}"
+                    )
+                    st.markdown(
+                        f"**Topics:** "
+                        f"{', '.join(get_question_topics(base)) or '—'}"
+                    )
+                    st.markdown(
+                        f"**Static / Non-static:** "
+                        f"{'Static' if is_static else 'Non-static (algorithmic)'}"
+                    )
 
-                    st.markdown("**Solution (one possible):**")
-                    st.markdown(example.get("solution", ""))
-                else:
-                    st.write("No text or variants defined for this question.")
+                    # Show an example question + solution:
+                    #   - static: use top-level text/solution
+                    #   - non-static with no top-level text: show the first variant
+                    if is_static or base.get("text"):
+                        st.markdown("**Question:**")
+                        st.markdown(base.get("text", ""))
+                        st.markdown("**Solution:**")
+                        st.markdown(base.get("solution", ""))
+                    else:
+                        if variants:
+                            example = variants[0]
+                            st.markdown("**Question (example variant):**")
+                            st.markdown(example.get("text", ""))
+                            st.markdown("**Solution (one possible):**")
+                            st.markdown(example.get("solution", ""))
+                        else:
+                            st.write("No text or variants defined for this question.")
 
-            # Show all variant question prompts (instructor info)
-            if not is_static and variants:
-                st.markdown("**All variants (questions only):**")
-                for v in variants:
-                    st.markdown("- " + v.get("text", ""))
-
-# ----- Right column: current test -----
+# ---------------------------------------------------------
+# Right column: Current test + export
+# ---------------------------------------------------------
 with col_test:
     st.subheader("Current Test")
 
-    if not selected_instances:
+    if not instances:
         st.write("No questions selected yet.")
     else:
-        for idx, instance_id in enumerate(selected_instances):
-            inst = get_instance(instance_id)
-            if not inst:
+        for idx, inst_obj in enumerate(instances, start=0):
+            inst_q = get_instance_question(inst_obj)
+            if not inst_q:
                 continue
             with st.container():
-                label_topic = get_label_topic(inst)
-                # Numbering is just 1., 2., 3., ...; no points shown
-                st.markdown(
-                    f"**{idx + 1}. {label_topic}**"
-                )
-                st.markdown(inst.get("text", ""))
+                label_topic = get_label_topic(inst_q)
+                # Number by position in test: 1., 2., 3., ...
+                st.markdown(f"**{idx + 1}. {label_topic}**")
+                st.markdown(inst_q.get("text", ""))
 
                 bcol1, bcol2, bcol3 = st.columns(3)
                 with bcol1:
