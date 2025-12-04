@@ -275,24 +275,50 @@ with col_bank:
             ids_to_add = [id_by_label[label] for label in selected_labels]
             add_to_test(ids_to_add)
 
-        with st.expander("Preview from bank"):
-            preview_label = st.selectbox(
-                "Choose a question to preview",
-                options=["(none)"] + options,
-                key="bank_preview_select",
-            )
-            if preview_label != "(none)":
-                qid = id_by_label[preview_label]
-                q = Q_BY_ID.get(qid)
-                if q:
-                    st.markdown(f"**ID:** {q['id']}")  # small reference only
-                    st.markdown(f"**Courses:** {', '.join(q.get('courses', []))}")
-                    st.markdown(f"**Types:** {', '.join(q.get('qtypes', []))}")
-                    st.markdown(f"**Topics:** {', '.join(get_question_topics(q))}")
+    with st.expander("Preview from bank"):
+        preview_label = st.selectbox(
+            "Choose a question to preview",
+            options=["(none)"] + options,
+            key="bank_preview_select",
+        )
+        if preview_label != "(none)":
+            qid = id_by_label[preview_label]
+            base = Q_BY_ID.get(qid)
+            if base:
+                is_static = base.get("static", True)
+                variants = base.get("variants", [])
+
+                st.markdown(f"**ID:** {base['id']}")
+                st.markdown(f"**Courses:** {', '.join(base.get('courses', [])) or '—'}")
+                st.markdown(f"**Types:** {', '.join(base.get('qtypes', [])) or '—'}")
+                st.markdown(f"**Topics:** {', '.join(get_question_topics(base)) or '—'}")
+                st.markdown(
+                    f"**Static / Non-static:** "
+                    f\"{'Static' if is_static else 'Non-static (algorithmic)'}\"
+                )
+
+                # Show an example question/solution
+                if is_static or base.get("text"):
                     st.markdown("**Question:**")
-                    st.markdown(q.get("text", ""))
-                    st.markdown("**Solution (one possible):**")
-                    st.markdown(q.get("solution", ""))
+                    st.markdown(base.get("text", ""))
+                    st.markdown("**Solution:**")
+                    st.markdown(base.get("solution", ""))
+                else:
+                    # Non-static with only variants: preview the first one
+                    if variants:
+                        example = variants[0]
+                        st.markdown("**Question (example variant):**")
+                        st.markdown(example.get("text", ""))
+                        st.markdown("**Solution (one possible):**")
+                        st.markdown(example.get("solution", ""))
+                    else:
+                        st.write("No text or variants defined for this question.")
+
+                # Optional: list all variant prompts for instructors
+                if not is_static and variants:
+                    st.markdown("**All variants (questions only):**")
+                    for v in variants:
+                        st.markdown("- " + v.get("text", ""))
 
 # ----- Right column: current test -----
 with col_test:
