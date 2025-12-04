@@ -1,16 +1,44 @@
 [
   {
-    "id": "LA_001",
-    "topic": "Row reduction",
-    "text": "Row reduce the matrix A = [[1,2],[3,4]].",
-    "solution": "Subtract 3*R1 from R2 to get [[1,2],[0,-2]]. Then divide R2 by -2 to get [[1,0],[0,1]]. So RREF(A) = I.",
+    "id": "M2000_LA_001",
+    "courses": ["Math 2000"],
+    "static": true,
+    "qtypes": ["Open-ended", "Computational"],
+    "topics": ["Row reduction", "Matrices"],
+    "text": "Row reduce the matrix $$A = \\begin{bmatrix}1 & 2 \\\\ 3 & 4\\end{bmatrix}.$$",
+    "solution": "Subtract $3R_1$ from $R_2$ to get $$\\begin{bmatrix}1 & 2 \\\\ 0 & -2\\end{bmatrix}.$$ Then divide $R_2$ by $-2$ to get $$\\begin{bmatrix}1 & 2 \\\\ 0 & 1\\end{bmatrix}.$$ Finally, replace $R_1$ with $R_1 - 2R_2$ to obtain $$\\begin{bmatrix}1 & 0 \\\\ 0 & 1\\end{bmatrix}.$$ So $\\operatorname{RREF}(A) = I_2.$",
     "points": 5
   },
   {
-    "id": "VC_010",
-    "topic": "Line integrals",
-    "text": "Compute ∮_C (y dx + x dy) around the unit circle x^2 + y^2 = 1 oriented counterclockwise.",
-    "solution": "Parametrize x = cos(t), y = sin(t), 0 ≤ t ≤ 2π. Then dx = -sin(t) dt, dy = cos(t) dt. Integrand: y dx + x dy = sin(t)(-sin(t) dt) + cos(t)(cos(t) dt) = -sin^2(t) dt + cos^2(t) dt = cos(2t) dt. ∮ = ∫_0^{2π} cos(2t) dt = [ (1/2) sin(2t) ]_0^{2π} = 0.",
+    "id": "M2760_VC_010",
+    "courses": ["Math 2760"],
+    "static": true,
+    "qtypes": ["Open-ended", "Conceptual"],
+    "topics": ["Line integrals", "Green's Theorem"],
+    "text": "Compute $$\\oint_C (y\\,dx + x\\,dy)$$ where $C$ is the unit circle $x^2 + y^2 = 1$ oriented counterclockwise.",
+    "solution": "Parametrize $C$ by $x = \\cos t$, $y = \\sin t$, $0 \\le t \\le 2\\pi$. Then $dx = -\\sin t\\,dt$, $dy = \\cos t\\,dt$. The integrand is\n$$y\\,dx + x\\,dy = \\sin t(-\\sin t\\,dt) + \\cos t(\\cos t\\,dt) = -\\sin^2 t\\,dt + \\cos^2 t\\,dt = \\cos(2t)\\,dt.$$ So\n$$\\oint_C (y\\,dx + x\\,dy) = \\int_0^{2\\pi} \\cos(2t)\\,dt = \\left[\\tfrac12 \\sin(2t)\\right]_0^{2\\pi} = 0.$$",
     "points": 8
+  },
+  {
+    "id": "M2760_TRIG_001",
+    "courses": ["Math 2760"],
+    "static": false,
+    "qtypes": ["Open-ended", "Algorithmic"],
+    "topics": ["Trig integrals", "Practice"],
+    "variants": [
+      {
+        "text": "Evaluate $$\\int \\cos(2x)\\,dx.$$",
+        "solution": "We have $$\\int \\cos(2x)\\,dx = \\tfrac12 \\sin(2x) + C.$$"
+      },
+      {
+        "text": "Evaluate $$\\int \\cos(5x)\\,dx.$$",
+        "solution": "We have $$\\int \\cos(5x)\\,dx = \\tfrac15 \\sin(5x) + C.$$"
+      },
+      {
+        "text": "Evaluate $$\\int \\cos(7x)\\,dx.$$",
+        "solution": "We have $$\\int \\cos(7x)\\,dx = \\tfrac17 \\sin(7x) + C.$$"
+      }
+    ],
+    "points": 4
   }
 ]

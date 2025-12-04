@@ -1,4 +1,5 @@
 import json
+import random
 from pathlib import Path
 
 import streamlit as st
@@ -23,44 +24,133 @@ def load_questions(path: Path):
 QUESTIONS = load_questions(Path("questions.json"))
 Q_BY_ID = {q["id"]: q for q in QUESTIONS}
 
-# ---------- Session state setup ----------
+# ---------- Session state ----------
 if "selected_ids" not in st.session_state:
     st.session_state["selected_ids"] = []
 
-selected_ids = st.session_state["selected_ids"]
+# For non-static questions with variants, store which variant was chosen per qid
+if "selected_variants" not in st.session_state:
+    st.session_state["selected_variants"] = {}
 
-# ---------- Sidebar filters ----------
+selected_ids = st.session_state["selected_ids"]
+selected_variants = st.session_state["selected_variants"]
+
+# ---------- Helper: unified topics + labels ----------
+def get_question_topics(q):
+    # Prefer list in "topics"; fall back to single "topic"
+    if "topics" in q and isinstance(q["topics"], list):
+        return q["topics"]
+    t = q.get("topic")
+    return [t] if t else []
+
+
+def get_label_topic(q):
+    # For display in lists
+    if "topic" in q and q["topic"]:
+        return q["topic"]
+    topics = get_question_topics(q)
+    return topics[0] if topics else "Untitled"
+
+
+# ---------- Filters in sidebar ----------
 st.sidebar.title("TestGen Lite (Web)")
 
 if not QUESTIONS:
     st.sidebar.write("Add a questions.json file and refresh.")
 else:
-    topics = sorted({q.get("topic", "Untitled") for q in QUESTIONS})
-    topic_filter = st.sidebar.multiselect(
-        "Filter by topic", options=topics, default=topics
+    # Courses
+    all_courses = sorted(
+        {c for q in QUESTIONS for c in q.get("courses", [])}
     )
+    course_filter = st.sidebar.multiselect(
+        "Course",
+        options=all_courses,
+        default=all_courses if all_courses else []
+    )
+
+    # Static / Non-static
+    static_options = ["Static", "Non-static"]
+    static_filter = st.sidebar.multiselect(
+        "Static / Non-static",
+        options=static_options,
+        default=static_options
+    )
+
+    # Question types
+    all_qtypes = sorted(
+        {qt for q in QUESTIONS for qt in q.get("qtypes", [])}
+    )
+    qtype_filter = st.sidebar.multiselect(
+        "Question type",
+        options=all_qtypes,
+        default=all_qtypes if all_qtypes else []
+    )
+
+    # Topics
+    all_topics = sorted(
+        {t for q in QUESTIONS for t in get_question_topics(q)}
+    )
+    topic_filter = st.sidebar.multiselect(
+        "Topics",
+        options=all_topics,
+        default=all_topics if all_topics else []
+    )
+
+    # Text search
     search_text = st.sidebar.text_input("Search in question text", value="")
 
 
 # ---------- Helper functions ----------
+def question_matches_filters(q):
+    # Courses
+    q_courses = q.get("courses", [])
+    if course_filter and not any(c in course_filter for c in q_courses):
+        return False
+
+    # Static / non-static
+    is_static = q.get("static", True)
+    if "Static" not in static_filter and is_static:
+        return False
+    if "Non-static" not in static_filter and not is_static:
+        return False
+
+    # Question types
+    q_qtypes = q.get("qtypes", [])
+    if qtype_filter and not any(t in qtype_filter for t in q_qtypes):
+        return False
+
+    # Topics
+    q_topics = get_question_topics(q)
+    if topic_filter and not any(t in topic_filter for t in q_topics):
+        return False
+
+    # Search text
+    if search_text.strip():
+        s = search_text.lower()
+        if s not in q.get("text", "").lower():
+            return False
+
+    return True
+
+
 def filtered_questions():
     if not QUESTIONS:
         return []
-    qs = [
-        q
-        for q in QUESTIONS
-        if q.get("topic", "Untitled") in topic_filter
-    ]
-    if search_text.strip():
-        s = search_text.lower()
-        qs = [q for q in qs if s in q.get("text", "").lower()]
-    return qs
+    return [q for q in QUESTIONS if question_matches_filters(q)]
 
 
 def add_to_test(ids_to_add):
     for qid in ids_to_add:
         if qid not in st.session_state["selected_ids"]:
             st.session_state["selected_ids"].append(qid)
+
+            # If question is non-static with variants, choose one variant index
+            q = Q_BY_ID.get(qid)
+            if q and not q.get("static", True) and "variants" in q:
+                variants = q["variants"]
+                if isinstance(variants, list) and variants:
+                    idx = random.randrange(len(variants))
+                    st.session_state["selected_variants"][qid] = idx
 
 
 def move_up(index):
@@ -80,17 +170,46 @@ def move_down(index):
 def remove_from_test(index):
     ids = st.session_state["selected_ids"]
     if 0 <= index < len(ids):
+        qid = ids[index]
         ids.pop(index)
+        # Remove any stored variant choice
+        if qid in st.session_state["selected_variants"]:
+            del st.session_state["selected_variants"][qid]
+
+
+def get_instance(qid):
+    """Return the 'instance' of a question (with variant applied if needed)."""
+    q = Q_BY_ID.get(qid)
+    if not q:
+        return None
+
+    is_static = q.get("static", True)
+    if is_static or "variants" not in q:
+        return q
+
+    variants = q.get("variants", [])
+    if not variants:
+        return q
+
+    idx = st.session_state["selected_variants"].get(qid, 0)
+    idx = max(0, min(idx, len(variants) - 1))
+    variant = variants[idx]
+
+    # Shallow copy base metadata but override text/solution
+    inst = dict(q)
+    inst["text"] = variant.get("text", q.get("text", ""))
+    inst["solution"] = variant.get("solution", q.get("solution", ""))
+    return inst
 
 
 def make_test_markdown():
     lines = ["# Test", ""]
     for i, qid in enumerate(st.session_state["selected_ids"], start=1):
-        q = Q_BY_ID.get(qid)
-        if not q:
+        inst = get_instance(qid)
+        if not inst:
             continue
-        pts = q.get("points", 0)
-        lines.append(f"{i}. ({pts} pts) {q.get('text', '')}")
+        pts = inst.get("points", 0)
+        lines.append(f"{i}. ({pts} pts) {inst.get('text', '')}")
         lines.append("")
     return "\n".join(lines)
 
@@ -98,13 +217,13 @@ def make_test_markdown():
 def make_key_markdown():
     lines = ["# Answer Key", ""]
     for i, qid in enumerate(st.session_state["selected_ids"], start=1):
-        q = Q_BY_ID.get(qid)
-        if not q:
+        inst = get_instance(qid)
+        if not inst:
             continue
-        pts = q.get("points", 0)
-        lines.append(f"{i}. ({pts} pts) {q.get('text', '')}")
+        pts = inst.get("points", 0)
+        lines.append(f"{i}. ({pts} pts) {inst.get('text', '')}")
         lines.append("")
-        lines.append(f"**Solution:** {q.get('solution', '')}")
+        lines.append(f"**Solution:** {inst.get('solution', '')}")
         lines.append("")
     return "\n".join(lines)
 
@@ -126,10 +245,11 @@ with col_bank:
         st.write("No questions match the current filter.")
     else:
         options = [
-            f"{q['id']} – {q.get('topic', 'Untitled')}" for q in bank_qs
+            f"{q['id']} – {get_label_topic(q)}"
+            for q in bank_qs
         ]
         id_by_label = {
-            f"{q['id']} – {q.get('topic', 'Untitled')}": q["id"]
+            f"{q['id']} – {get_label_topic(q)}": q["id"]
             for q in bank_qs
         }
 
@@ -151,14 +271,16 @@ with col_bank:
             )
             if preview_label != "(none)":
                 qid = id_by_label[preview_label]
-                q = Q_BY_ID.get(qid)
-                if q:
-                    st.markdown(f"**ID:** {q['id']}")
-                    st.markdown(f"**Topic:** {q.get('topic', 'Untitled')}")
+                inst = get_instance(qid) or Q_BY_ID.get(qid)
+                if inst:
+                    st.markdown(f"**ID:** {inst['id']}")
+                    st.markdown(f"**Courses:** {', '.join(inst.get('courses', []))}")
+                    st.markdown(f"**Types:** {', '.join(inst.get('qtypes', []))}")
+                    st.markdown(f"**Topics:** {', '.join(get_question_topics(inst))}")
                     st.markdown("**Question:**")
-                    st.write(q.get("text", ""))
+                    st.markdown(inst.get("text", ""))
                     st.markdown("**Solution:**")
-                    st.write(q.get("solution", ""))
+                    st.markdown(inst.get("solution", ""))
 
 # ----- Right column: current test -----
 with col_test:
@@ -168,15 +290,16 @@ with col_test:
         st.write("No questions selected yet.")
     else:
         for idx, qid in enumerate(selected_ids):
-            q = Q_BY_ID.get(qid)
-            if not q:
+            inst = get_instance(qid)
+            if not inst:
                 continue
             with st.container():
+                label_topic = get_label_topic(inst)
                 st.markdown(
-                    f"**{idx + 1}. {qid} – {q.get('topic', 'Untitled')} "
-                    f"({q.get('points', 0)} pts)**"
+                    f"**{idx + 1}. {qid} – {label_topic} "
+                    f"({inst.get('points', 0)} pts)**"
                 )
-                st.write(q.get("text", ""))
+                st.markdown(inst.get("text", ""))
 
                 bcol1, bcol2, bcol3 = st.columns(3)
                 with bcol1:
