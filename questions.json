@@ -1,0 +1,16 @@
+[
+  {
+    "id": "LA_001",
+    "topic": "Row reduction",
+    "text": "Row reduce the matrix A = [[1,2],[3,4]].",
+    "solution": "Subtract 3*R1 from R2 to get [[1,2],[0,-2]]. Then divide R2 by -2 to get [[1,0],[0,1]]. So RREF(A) = I.",
+    "points": 5
+  },
+  {
+    "id": "VC_010",
+    "topic": "Line integrals",
+    "text": "Compute ∮_C (y dx + x dy) around the unit circle x^2 + y^2 = 1 oriented counterclockwise.",
+    "solution": "Parametrize x = cos(t), y = sin(t), 0 ≤ t ≤ 2π. Then dx = -sin(t) dt, dy = cos(t) dt. Integrand: y dx + x dy = sin(t)(-sin(t) dt) + cos(t)(cos(t) dt) = -sin^2(t) dt + cos^2(t) dt = cos(2t) dt. ∮ = ∫_0^{2π} cos(2t) dt = [ (1/2) sin(2t) ]_0^{2π} = 0.",
+    "points": 8
+  }
+]
