@@ -25,17 +25,22 @@ QUESTIONS = load_questions(Path("questions.json"))
 Q_BY_ID = {q["id"]: q for q in QUESTIONS}
 
 # ---------- Session state ----------
-if "selected_ids" not in st.session_state:
-    st.session_state["selected_ids"] = []
+# Each selected item is an *instance* id, e.g. "M2760_TRIG_001#3"
+if "selected_instances" not in st.session_state:
+    st.session_state["selected_instances"] = []
 
-# For non-static questions with variants, store which variant was chosen per qid
+# Map instance_id -> chosen variant index (for non-static questions)
 if "selected_variants" not in st.session_state:
     st.session_state["selected_variants"] = {}
 
-selected_ids = st.session_state["selected_ids"]
+# Counter used to make unique instance ids
+if "instance_counter" not in st.session_state:
+    st.session_state["instance_counter"] = 0
+
+selected_instances = st.session_state["selected_instances"]
 selected_variants = st.session_state["selected_variants"]
 
-# ---------- Helper: unified topics + labels ----------
+# ---------- Helper: topics ----------
 def get_question_topics(q):
     # Prefer list in "topics"; fall back to single "topic"
     if "topics" in q and isinstance(q["topics"], list):
@@ -73,7 +78,7 @@ else:
     static_filter = st.sidebar.multiselect(
         "Static / Non-static",
         options=static_options,
-        default=static_options
+        default=static_options,
     )
 
     # Question types
@@ -86,14 +91,14 @@ else:
         default=all_qtypes if all_qtypes else []
     )
 
-    # Topics
+    # Topics – **unselected by default** (means “no topic filter”)
     all_topics = sorted(
         {t for q in QUESTIONS for t in get_question_topics(q)}
     )
     topic_filter = st.sidebar.multiselect(
         "Topics",
         options=all_topics,
-        default=all_topics if all_topics else []
+        default=[],   # <- nothing selected by default
     )
 
     # Text search
@@ -119,7 +124,7 @@ def question_matches_filters(q):
     if qtype_filter and not any(t in qtype_filter for t in q_qtypes):
         return False
 
-    # Topics
+    # Topics – only filter if user picked something
     q_topics = get_question_topics(q)
     if topic_filter and not any(t in topic_filter for t in q_topics):
         return False
@@ -140,45 +145,54 @@ def filtered_questions():
 
 
 def add_to_test(ids_to_add):
+    """Add one *instance* per qid. Duplicates are allowed."""
     for qid in ids_to_add:
-        if qid not in st.session_state["selected_ids"]:
-            st.session_state["selected_ids"].append(qid)
+        if qid not in Q_BY_ID:
+            continue
+        # Create unique instance id
+        inst_id_num = st.session_state["instance_counter"]
+        instance_id = f"{qid}#{inst_id_num}"
+        st.session_state["instance_counter"] += 1
 
-            # If question is non-static with variants, choose one variant index
-            q = Q_BY_ID.get(qid)
-            if q and not q.get("static", True) and "variants" in q:
-                variants = q["variants"]
-                if isinstance(variants, list) and variants:
-                    idx = random.randrange(len(variants))
-                    st.session_state["selected_variants"][qid] = idx
+        st.session_state["selected_instances"].append(instance_id)
+
+        # If question is non-static with variants, choose one variant index
+        q = Q_BY_ID[qid]
+        if not q.get("static", True) and "variants" in q:
+            variants = q["variants"]
+            if isinstance(variants, list) and variants:
+                idx = random.randrange(len(variants))
+                st.session_state["selected_variants"][instance_id] = idx
 
 
 def move_up(index):
-    if index <= 0 or index >= len(st.session_state["selected_ids"]):
+    if index <= 0 or index >= len(st.session_state["selected_instances"]):
         return
-    ids = st.session_state["selected_ids"]
-    ids[index - 1], ids[index] = ids[index], ids[index - 1]
+    instances = st.session_state["selected_instances"]
+    instances[index - 1], instances[index] = instances[index], instances[index - 1]
 
 
 def move_down(index):
-    if index < 0 or index >= len(st.session_state["selected_ids"]) - 1:
+    if index < 0 or index >= len(st.session_state["selected_instances"]) - 1:
         return
-    ids = st.session_state["selected_ids"]
-    ids[index + 1], ids[index] = ids[index], ids[index + 1]
+    instances = st.session_state["selected_instances"]
+    instances[index + 1], instances[index] = instances[index], instances[index + 1]
 
 
 def remove_from_test(index):
-    ids = st.session_state["selected_ids"]
-    if 0 <= index < len(ids):
-        qid = ids[index]
-        ids.pop(index)
+    instances = st.session_state["selected_instances"]
+    if 0 <= index < len(instances):
+        instance_id = instances[index]
+        instances.pop(index)
         # Remove any stored variant choice
-        if qid in st.session_state["selected_variants"]:
-            del st.session_state["selected_variants"][qid]
+        if instance_id in st.session_state["selected_variants"]:
+            del st.session_state["selected_variants"][instance_id]
 
 
-def get_instance(qid):
+def get_instance(instance_id):
     """Return the 'instance' of a question (with variant applied if needed)."""
+    # instance_id looks like "QID#3"
+    qid = instance_id.split("#", 1)[0]
     q = Q_BY_ID.get(qid)
     if not q:
         return None
@@ -191,7 +205,7 @@ def get_instance(qid):
     if not variants:
         return q
 
-    idx = st.session_state["selected_variants"].get(qid, 0)
+    idx = st.session_state["selected_variants"].get(instance_id, 0)
     idx = max(0, min(idx, len(variants) - 1))
     variant = variants[idx]
 
@@ -204,24 +218,22 @@ def get_instance(qid):
 
 def make_test_markdown():
     lines = ["# Test", ""]
-    for i, qid in enumerate(st.session_state["selected_ids"], start=1):
-        inst = get_instance(qid)
+    for i, instance_id in enumerate(st.session_state["selected_instances"], start=1):
+        inst = get_instance(instance_id)
         if not inst:
             continue
-        pts = inst.get("points", 0)
-        lines.append(f"{i}. ({pts} pts) {inst.get('text', '')}")
+        lines.append(f"{i}. {inst.get('text', '')}")
         lines.append("")
     return "\n".join(lines)
 
 
 def make_key_markdown():
     lines = ["# Answer Key", ""]
-    for i, qid in enumerate(st.session_state["selected_ids"], start=1):
-        inst = get_instance(qid)
+    for i, instance_id in enumerate(st.session_state["selected_instances"], start=1):
+        inst = get_instance(instance_id)
         if not inst:
             continue
-        pts = inst.get("points", 0)
-        lines.append(f"{i}. ({pts} pts) {inst.get('text', '')}")
+        lines.append(f"{i}. {inst.get('text', '')}")
         lines.append("")
         lines.append(f"**Solution:** {inst.get('solution', '')}")
         lines.append("")
@@ -271,33 +283,33 @@ with col_bank:
             )
             if preview_label != "(none)":
                 qid = id_by_label[preview_label]
-                inst = get_instance(qid) or Q_BY_ID.get(qid)
-                if inst:
-                    st.markdown(f"**ID:** {inst['id']}")
-                    st.markdown(f"**Courses:** {', '.join(inst.get('courses', []))}")
-                    st.markdown(f"**Types:** {', '.join(inst.get('qtypes', []))}")
-                    st.markdown(f"**Topics:** {', '.join(get_question_topics(inst))}")
+                q = Q_BY_ID.get(qid)
+                if q:
+                    st.markdown(f"**ID:** {q['id']}")  # small reference only
+                    st.markdown(f"**Courses:** {', '.join(q.get('courses', []))}")
+                    st.markdown(f"**Types:** {', '.join(q.get('qtypes', []))}")
+                    st.markdown(f"**Topics:** {', '.join(get_question_topics(q))}")
                     st.markdown("**Question:**")
-                    st.markdown(inst.get("text", ""))
-                    st.markdown("**Solution:**")
-                    st.markdown(inst.get("solution", ""))
+                    st.markdown(q.get("text", ""))
+                    st.markdown("**Solution (one possible):**")
+                    st.markdown(q.get("solution", ""))
 
 # ----- Right column: current test -----
 with col_test:
     st.subheader("Current Test")
 
-    if not selected_ids:
+    if not selected_instances:
         st.write("No questions selected yet.")
     else:
-        for idx, qid in enumerate(selected_ids):
-            inst = get_instance(qid)
+        for idx, instance_id in enumerate(selected_instances):
+            inst = get_instance(instance_id)
             if not inst:
                 continue
             with st.container():
                 label_topic = get_label_topic(inst)
+                # Numbering is just 1., 2., 3., ...; no points shown
                 st.markdown(
-                    f"**{idx + 1}. {qid} – {label_topic} "
-                    f"({inst.get('points', 0)} pts)**"
+                    f"**{idx + 1}. {label_topic}**"
                 )
                 st.markdown(inst.get("text", ""))
 
