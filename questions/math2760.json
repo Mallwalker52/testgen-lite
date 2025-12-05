@@ -75,18 +75,19 @@
   "text_template": "Let $\\mathbf{F}(x,y)=\\langle -x, y \\rangle$. Compute the circulation $\\displaystyle \\oint_C \\mathbf{F}\\cdot d\\mathbf{r}$ around the curve $\\mathbf{r}(t)=\\langle {n1}\\cos t,\\ -{n1}\\sin t \\rangle$, $0\\le t\\le 2\\pi$.",
   "solution_template": "The curve $C$ is the circle of radius ${n1}$ traced clockwise, and $\\mathbf{F}(x,y)=\\langle -x,y\\rangle$. Compute the scalar curl:\n$$\\frac{\\partial}{\\partial x}(y) - \\frac{\\partial}{\\partial y}(-x) = 0 - 0 = 0.$$ Since the curl is zero everywhere, $\\mathbf{F}$ is conservative on $\\mathbb{R}^2$. For a conservative field, the circulation around any closed curve is zero, so\n$$\\oint_C \\mathbf{F}\\cdot d\\mathbf{r} = 0.$$"
 },
-  {
-    "id": "M2760_CONSERVATIVE_N1",
-    "courses": ["Math 2760"],
-    "static": false,
-    "qtypes": ["Open-ended", "Algorithmic", "Conceptual"],
-    "topics": ["Conservative fields", "Potential functions", "Line integrals"],
-    "params": {
-      "n1": { "min": 3, "max": 8 }
-    },
-    "text_template": "Consider the vector field $\\\\mathbf{F}(x,y)=\\\\langle \\\\ln(y)+2xy^3,\\\\ x/y+3x^2 y^2 \\\\rangle$.\n\nA. Verify that $\\\\mathbf{F}$ is conservative.\n\nB. Find a potential function $f(x,y)$ such that $\\\\nabla f = \\\\mathbf{F}$.\n\nC. Evaluate the line integral $\\\\displaystyle \\\\int_C \\\\mathbf{F}\\\\cdot d\\\\mathbf{r}$ along the curve $\\\\mathbf{r}(t)=\\\\langle t-{n1},\\\\ t \\\\rangle$ for $1\\\\le t\\\\le 2$ using the Fundamental Theorem for Line Integrals.",
-    "solution_template": "Write the field as $\\\\mathbf F(x,y)=\\\\langle P(x,y),Q(x,y)\\\\rangle$ with\n$$P(x,y)=\\\\ln(y)+2xy^3, \\\\qquad Q(x,y)=x/y+3x^2y^2.$$ \nCompute partial derivatives:\n$$P_y = 1/y + 6xy^2, \\\\qquad Q_x = 1/y + 6xy^2.$$ \nSince $P_y = Q_x$ on $y>0$, the field is conservative.\n\nTo find a potential $f$, integrate $P$ with respect to $x$:\n$$f(x,y)=\\\\int (\\\\ln y + 2xy^3)\\\\,dx = x\\\\ln y + x^2y^3 + g(y).$$\nDifferentiate with respect to $y$:\n$$f_y = x/y + 3x^2y^2 + g'(y).$$\nSet equal to $Q$:\n$$x/y + 3x^2y^2 + g'(y) = x/y + 3x^2y^2,$$\nso $g'(y)=0$. A potential is therefore\n$$f(x,y)=x\\\\ln y + x^2y^3.$$\n\nFor $\\\\mathbf r(t)=\\\\langle t-{n1},\,t\\\\rangle$, the Fundamental Theorem gives\n$$\\\\int_C \\\\mathbf F\\\\cdot d\\\\mathbf r = f(\\\\mathbf r(2)) - f(\\\\mathbf r(1)).$$"
+{
+  "id": "M2760_CONSERVATIVE_N1",
+  "courses": ["Math 2760"],
+  "static": false,
+  "qtypes": ["Open-ended", "Algorithmic", "Conceptual"],
+  "topics": ["Conservative fields", "Potential functions", "Line integrals"],
+  "params": {
+    "n1": { "min": 3, "max": 8 }
   },
+  "text_template": "Consider the vector field $\\mathbf{F}(x,y)=\\langle \\ln(y)+2xy^3,\\ x/y+3x^2 y^2 \\rangle$.\n\nA. Verify that $\\mathbf{F}$ is conservative.\n\nB. Find a potential function $f(x,y)$ such that $\\nabla f = \\mathbf{F}$.\n\nC. Evaluate the line integral $\\displaystyle \\int_C \\mathbf{F}\\cdot d\\mathbf{r}$ along the curve $\\mathbf{r}(t)=\\langle t-{n1},\\ t \\rangle$ for $1\\le t\\le 2$ using the Fundamental Theorem for Line Integrals.",
+  "solution_template": "Write the field as $\\mathbf F(x,y)=\\langle P(x,y),Q(x,y)\\rangle$ with\n$$P(x,y)=\\ln(y)+2xy^3, \\qquad Q(x,y)=x/y+3x^2y^2.$$ \nCompute partial derivatives:\n$$P_y = 1/y + 6xy^2, \\qquad Q_x = 1/y + 6xy^2.$$ \nSince $P_y = Q_x$ on y>0, the field is conservative.\n\nTo find a potential f, integrate P with respect to x:\n$$f(x,y)=\\int (\\ln y + 2xy^3)dx = x\\ln y + x^2y^3 + g(y).$$\nDifferentiate with respect to y:\n$$f_y = x/y + 3x^2y^2 + g'(y).$$\nSet equal to Q:\n$$x/y + 3x^2y^2 + g'(y) = x/y + 3x^2y^2,$$\nso g'(y)=0. A potential is therefore\n$$f(x,y)=x\\ln y + x^2y^3.$$\n\nFor $\\mathbf r(t)=\\langle t-{n1}, t\\rangle$, the Fundamental Theorem gives\n$$\\int_C \\mathbf F\\cdot d\\mathbf r = f(\\mathbf r(2)) - f(\\mathbf r(1)).$$"
+}
+,
 
   {
     "id": "M2760_CYL_CART_SURFACE",
@@ -149,8 +150,9 @@
   "params": {
     "n1": { "min": 1, "max": 9 }
   },
-  "text_template": "Let $C$ be the curve\n$$\\mathbf r(t)=\\langle t, t^2, t^3 \\rangle, \\quad 0 \\le t \\le 1.$$ \nEvaluate the line integral\n$$\\int_C (x + y + z + {n1})\\,ds,$$\nusing the definition\n$$\\int_C f(x,y,z)\\,ds = \\int_0^1 f(\\mathbf r(t))\\,\\|\\mathbf r'(t)\\|\\,dt.$$",
-  "solution_template": "Compute\n$$\\mathbf r'(t)=\\langle 1, 2t, 3t^2 \\rangle,$$\nso\n$$\\|\\mathbf r'(t)\\| = \\sqrt{1 + 4t^2 + 9t^4}.$$ \nAlong the curve,\n$$f(\\mathbf r(t)) = t + t^2 + t^3 + {n1}.$$ \nThus the line integral becomes\n$$\\int_0^1 (t + t^2 + t^3 + {n1})\\sqrt{1 + 4t^2 + 9t^4}\\,dt.$$ \nThis integral does not have an elementary antiderivative, so this expression is the evaluated form using the definition of the line integral with respect to arc length."
+  "text_template": "Let $C$ be the curve\n$$\\mathbf r(t)=\\langle t, t^2, t^3 \\rangle, \\quad 0 \\le t \\le 1.$$ \nEvaluate the line integral\n$$\\int_C (x + y + z + {n1})ds,$$\nusing the definition\n$$\\int_C f(x,y,z)ds = \\int_0^1 f(\\mathbf r(t))\\|\\mathbf r'(t)\\|dt.$$",
+  "solution_template": "Compute\n$$\\mathbf r'(t)=\\langle 1, 2t, 3t^2 \\rangle,$$\nso\n$$\\|\\mathbf r'(t)\\| = \\sqrt{1 + 4t^2 + 9t^4}.$$ \nAlong the curve,\n$$f(\\mathbf r(t)) = t + t^2 + t^3 + {n1}.$$ \nThus the line integral becomes\n$$\\int_0^1 (t + t^2 + t^3 + {n1})\\sqrt{1 + 4t^2 + 9t^4}dt.$$ \nThis integral does not have an elementary antiderivative, so this expression is the evaluated form using the definition of the line integral with respect to arc length."
 }
+
 
 ]
