@@ -3,7 +3,7 @@ import random
 from pathlib import Path
 
 import streamlit as st
-
+from string import Formatter
 
 # ---------- Load question bank ----------
 def load_questions(path: Path):
@@ -205,6 +205,39 @@ def generate_params_for_question(q):
 def reset_test():
     st.session_state["instances"] = []
 
+def render_template(template: str, params: dict) -> str:
+    """
+    Safely render a template string using params.
+    - Only formats placeholders that exist in params.
+    - Leaves missing placeholders as {name} instead of crashing.
+    """
+    if not template:
+        return ""
+    if not params:
+        return template
+
+    # Find which field names actually appear in the template
+    needed_keys = set()
+    for _, field_name, _, _ in Formatter().parse(template):
+        if field_name:
+            needed_keys.add(field_name)
+
+    # Build a safe dict: use param value if present, otherwise keep {name}
+    safe_params = {}
+    for k in needed_keys:
+        if k in params:
+            safe_params[k] = params[k]
+        else:
+            # leave unresolved placeholders visible but non-crashing
+            safe_params[k] = "{" + k + "}"
+
+    try:
+        return template.format(**safe_params)
+    except Exception:
+        # As a fallback, just return the original template
+        return template
+
+
 def get_instance_question(inst_obj):
     """
     Return the concrete question for this instance:
@@ -234,19 +267,20 @@ def get_instance_question(inst_obj):
         q["solution"] = v.get("solution", base.get("solution", ""))
 
     # 2) Parameter-based logic (new style)
-    params = inst_obj.get("params")
+    params = inst_obj.get("params") or {}
 
-    # If there are templates and params, render them
-    if params and "text_template" in base:
-        q["text"] = base["text_template"].format(**params)
-    if params and "solution_template" in base:
-        q["solution"] = base["solution_template"].format(**params)
+    # If there are templates and params, render them safely
+    if "text_template" in base:
+        q["text"] = render_template(base["text_template"], params)
+    if "solution_template" in base:
+        q["solution"] = render_template(base["solution_template"], params)
 
     # Fallbacks: make sure text/solution exist
     q.setdefault("text", base.get("text", ""))
     q.setdefault("solution", base.get("solution", ""))
 
     return q
+
 
 
 
