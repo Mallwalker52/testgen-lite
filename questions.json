@@ -51,10 +51,16 @@
     "n1": { "min": 3, "max": 8 },
     "n2": { "min": 3, "max": 10 },
     "n3": { "expr": "n1 + n2" },
-    "phi": { "expr": "n2*(-n1*n1 - n1*n2 - (n2*n2)/3 + n2/2)" }
+
+    "phi_raw": {
+      "expr": "n2*(-n1*n1 - n1*n2 - (n2*n2)/3 + n2/2)"
+    },
+    "phi_val": {
+      "expr": "round(phi_raw, 2)"
+    }
   },
   "text_template": "Compute the flux of $\\mathbf F(x,y)=\\langle x, y^2 \\rangle$ across the segment from $(0,{n1})$ to $({n2},{n3})$ using the right-hand normal vector $\\mathbf n(t)=\\langle y'(t), -x'(t) \\rangle$.",
-  "solution_template": "Parameterize the segment from $(0,{n1})$ to $({n2},{n3})$ by $$\\mathbf r(t)=\\langle {n2}t, {n1} + ({n3}-{n1})t \\rangle,\\quad 0\\le t \\le 1.$$ Then $$\\mathbf r'(t)=\\langle {n2}, {n3}-{n1} \\rangle$$ and a right-hand normal vector is $$\\mathbf n(t)=\\langle y'(t), -x'(t) \\rangle = \\langle {n3}-{n1}, -{n2} \\rangle.$$ The flux is $$\\Phi = \\int_0^1 \\mathbf F(\\mathbf r(t)) \\cdot \\mathbf n(t) \\, dt.$$ Evaluating this integral for the given segment and field gives the numerical value $$\\Phi = {phi}.$$"
+  "solution_template": "Parameterize the segment from $(0,{n1})$ to $({n2},{n3})$ by $$\\mathbf r(t)=\\langle {n2}t, {n1} + ({n3}-{n1})t \\rangle,\\quad 0\\le t \\le 1.$$ Then $$\\mathbf r'(t)=\\langle {n2}, {n3}-{n1} \\rangle$$ and a right-hand normal vector is $$\\mathbf n(t)=\\langle y'(t), -x'(t) \\rangle = \\langle {n3}-{n1}, -{n2} \\rangle.$$ Along this line, the flux of $\\mathbf F$ across the curve has the general form $$\\Phi = b \\int_0^1 \\bigl( b t - (a + b t)^2 \\bigr) \\, dt,$$ where $a$ is the starting $y$-coordinate and $b$ is the change in $y$ along the segment. For this segment, $a={n1}$ and $b={n2}$, so $$\\Phi = {n2} \\int_0^1 \\bigl( {n2} t - ( {n1} + {n2} t )^2 \\bigr) \\, dt.$$ Evaluating this integral gives the numerical flux $$\\Phi \\approx {phi_val}.$$"
 }
 ,
 {
