@@ -233,7 +233,7 @@ all_courses = sorted({c for q in QUESTIONS for c in q.get("courses", [])})
 course_filter = st.sidebar.multiselect(
     "Course",
     options=all_courses,
-    default(all_courses if all_courses else []),
+    default=all_courses if all_courses else [],
 )
 
 # Static / Non-static
