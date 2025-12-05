@@ -138,16 +138,17 @@
     "solution_template": "In spherical coordinates we have x^2 + y^2 + z^2 = rho^2, and the volume element is dV = rho^2 sin(phi) d rho d phi d theta.\nThus the integrand x^2 + y^2 + z^2 + {n1} becomes rho^2 + {n1}, and the integrand times the Jacobian is\n(rho^2 + {n1}) rho^2 sin(phi) = (rho^4 + {n1} rho^2) sin(phi).\nThe integral becomes\n∫(theta=0 to pi) ∫(phi=0 to pi/3) ∫(rho=0 to 2) (rho^4 + {n1} rho^2) sin(phi) d rho d phi d theta.\nFirst integrate with respect to rho:\n∫(rho=0 to 2) (rho^4 + {n1} rho^2) d rho\n= [rho^5 / 5 + {n1} rho^3 / 3] from 0 to 2\n= 32/5 + 8 {n1} / 3.\nNext integrate with respect to phi:\n∫(phi=0 to pi/3) sin(phi) d phi = 1/2.\nFinally integrate with respect to theta:\n∫(theta=0 to pi) d theta = pi.\nMultiplying these factors, the value of the integral is\nI = (32/5 + 8 {n1} / 3) * (1/2) * pi = pi (16/5 + 4 {n1} / 3)."
   },
 
-  {
-    "id": "M2760_LINE_INT_ARCLENGTH",
-    "courses": ["Math 2760"],
-    "static": false,
-    "qtypes": ["Open-ended", "Computational"],
-    "topics": ["Line integrals", "Arc length"],
-    "params": {
-      "n1": { "min": 1, "max": 9 }
-    },
-    "text_template": "Let $C$ be the curve $$\\mathbf r(t)=\\langle t, t^2, t^3 \\rangle, \\quad 0 \\le t \\le 1.$$ Evaluate the line integral\n$$\\int_C (x + y + z + {n1})\,ds,$$\nusing the definition\n$$\\int_C f(x,y,z)\,ds = \\int_0^1 f(\\mathbf r(t)) \\, \\|\\mathbf r'(t)\\|\,dt.$$",
-    "solution_template": "The curve is r(t) = (t, t^2, t^3) for 0 <= t <= 1.\nFirst compute r'(t):\nr'(t) = (1, 2t, 3t^2).\nThen the speed is\n||r'(t)|| = sqrt(1 + 4 t^2 + 9 t^4).\nThe scalar field along the curve is\nf(r(t)) = x + y + z + {n1} = t + t^2 + t^3 + {n1}.\nBy the definition of the line integral with respect to arc length,\n∫_C (x + y + z + {n1}) ds = ∫(t=0 to 1) (t + t^2 + t^3 + {n1}) sqrt(1 + 4 t^2 + 9 t^4) dt.\nThis integral does not have a simple elementary antiderivative, so the exact value is given by this single-variable integral expression.\nFor purposes of setup, the correct evaluation using the definition is\n∫(t=0 to 1) (t + t^2 + t^3 + {n1}) sqrt(1 + 4 t^2 + 9 t^4) dt."
-  }
+{
+  "id": "M2760_LINE_INT_ARCLENGTH",
+  "courses": ["Math 2760"],
+  "static": false,
+  "qtypes": ["Open-ended", "Computational"],
+  "topics": ["Line integrals", "Arc length"],
+  "params": {
+    "n1": { "min": 1, "max": 9 }
+  },
+  "text_template": "Let $C$ be the curve $$\\\\mathbf r(t)=\\\\langle t, t^2, t^3 \\\\rangle, \\\\quad 0 \\\\le t \\\\le 1.$$ Evaluate the line integral\n$$\\\\int_C (x + y + z + {n1})\\\\,ds,$$\nusing the definition\n$$\\\\int_C f(x,y,z)\\\\,ds = \\\\int_0^1 f(\\\\mathbf r(t)) \\\\, \\\\|\\\\mathbf r'(t)\\\\|\\\\,dt.$$",
+  "solution_template": "The curve is r(t) = (t, t^2, t^3) for 0 <= t <= 1.\nFirst compute r'(t):\nr'(t) = (1, 2t, 3t^2).\nThen the speed is\n||r'(t)|| = sqrt(1 + 4 t^2 + 9 t^4).\nThe scalar field along the curve is\nf(r(t)) = t + t^2 + t^3 + {n1}.\nBy the definition of the line integral with respect to arc length,\n\\\\int_C (x + y + z + {n1}) ds = \\\\int_0^1 (t + t^2 + t^3 + {n1}) \\\\sqrt{1 + 4 t^2 + 9 t^4} \\\\, dt.\nThis integral does not have a simple elementary antiderivative, so the exact value is given by this single-variable integral expression.\nFor purposes of setup, the correct evaluation using the definition is\n\\\\int_0^1 (t + t^2 + t^3 + {n1}) \\\\sqrt{1 + 4 t^2 + 9 t^4} \\\\, dt."
+}
+
 ]
