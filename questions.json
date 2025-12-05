@@ -41,7 +41,7 @@
     ],
     "points": 4
   },
-  {
+{
   "id": "M2760_FLUX_N123",
   "courses": ["Math 2760"],
   "static": false,
@@ -53,9 +53,8 @@
     "n3": { "expr": "n1 + n2" }
   },
   "text_template": "Compute the flux of $\\mathbf{F}(x,y)=\\langle x, y^2 \\rangle$ across the segment from $(0,{n1})$ to $({n2},{n3})$ using the right-hand normal vector $\\mathbf{n}(t)=\\langle y'(t), -x'(t) \\rangle$.",
-  "solution_template": "Parameterize the line segment from $(0,{n1})$ to $({n2},{n3})$ by\n\\[ \\mathbf{r}(t)=\\langle {n2}t,\\ {n1} + ({n3}-{n1})t \\rangle, \\quad 0\\le t\\le 1. \\]\nThen\n\\[ \\mathbf{r}'(t)=\\langle {n2},\\ {n3}-{n1} \\rangle. \\]\nThe right-hand normal along the curve is\n\\[ \\mathbf{n}(t)=\\langle y'(t),-x'(t)\\rangle = \\langle {n3}-{n1},\\ -{n2} \\rangle. \\]\nEvaluate the field on the curve:\n\\[ \\mathbf{F}(\\mathbf{r}(t)) = \\left\\langle {n2}t,\\ \\big({n1}+({n3}-{n1})t\\big)^2 \\right\\rangle. \\]\nThe flux integrand is the dot product\n\\[ \\mathbf{F}(\\mathbf{r}(t))\\cdot \\mathbf{n}(t) = {n2}t({n3}-{n1}) - {n2}\\big({n1}+({n3}-{n1})t\\big)^2. \\]\nThus the flux across the segment is\n\\[ \\int_0^1 \\mathbf{F}(\\mathbf{r}(t))\\cdot \\mathbf{n}(t)\\,dt, \\]\nwhich can be evaluated by expanding the integrand and integrating term by term to obtain a constant that depends only on the endpoints of the segment."
-}
-,
+  "solution_template": "Parameterize the line segment from $(0,{n1})$ to $({n2},{n3})$ by\n$$\\mathbf{r}(t)=\\langle {n2}t,\\ {n1} + ({n3}-{n1})t \\rangle, \\quad 0\\le t\\le 1.$$ Then\n$$\\mathbf{r}'(t)=\\langle {n2},\\ {n3}-{n1} \\rangle.$$ A right-hand normal is\n$$\\mathbf{n}(t)=\\langle y'(t),-x'(t)\\rangle = \\langle {n3}-{n1},\\ -{n2} \\rangle.$$ Evaluate\n$$\\mathbf{F}(\\mathbf{r}(t)) = \\left\\langle {n2}t,\\ \\big({n1}+({n3}-{n1})t\\big)^2 \\right\\rangle,$$ so the integrand is\n$$\\mathbf{F}(\\mathbf{r}(t))\\cdot \\mathbf{n}(t) = {n2}t({n3}-{n1}) - {n2}\\big({n1}+({n3}-{n1})t\\big)^2.$$ The flux is\n$$\\int_0^1 \\mathbf{F}(\\mathbf{r}(t))\\cdot \\mathbf{n}(t)\\,dt,$$ which can be computed by expanding and integrating term by term."
+},
 {
   "id": "M2760_CIRC_N1",
   "courses": ["Math 2760"],
@@ -66,9 +65,8 @@
     "n1": { "min": 3, "max": 8 }
   },
   "text_template": "Let $\\mathbf{F}(x,y)=\\langle -x, y \\rangle$. Compute the circulation $\\displaystyle \\oint_C \\mathbf{F}\\cdot d\\mathbf{r}$ around the curve $\\mathbf{r}(t)=\\langle {n1}\\cos t,\\ -{n1}\\sin t \\rangle$, $0\\le t\\le 2\\pi$.",
-  "solution_template": "The field is $\\mathbf{F}(x,y)=\\langle -x,y\\rangle$ and $C$ is a circle of radius ${n1}$ traced clockwise. Compute the scalar curl in 2D:\n\\[ \\frac{\\partial}{\\partial x}(y) - \\frac{\\partial}{\\partial y}(-x) = 0 - 0 = 0. \\]\nSince the curl is zero on all of $\\mathbb{R}^2$, the field is conservative on this domain. For a conservative field, the circulation around any closed curve is zero, so\n\\[ \\oint_C \\mathbf{F}\\cdot d\\mathbf{r} = 0. \\]\nThis result is independent of the radius of the circle."
-}
-,
+  "solution_template": "The curve $C$ is the circle of radius ${n1}$ traced clockwise, and $\\mathbf{F}(x,y)=\\langle -x,y\\rangle$. Compute the scalar curl:\n$$\\frac{\\partial}{\\partial x}(y) - \\frac{\\partial}{\\partial y}(-x) = 0 - 0 = 0.$$ Since the curl is zero everywhere, $\\mathbf{F}$ is conservative on $\\mathbb{R}^2$. For a conservative field, the circulation around any closed curve is zero, so\n$$\\oint_C \\mathbf{F}\\cdot d\\mathbf{r} = 0.$$"
+},
 {
   "id": "M2760_CONSERVATIVE_N1",
   "courses": ["Math 2760"],
@@ -79,6 +77,6 @@
     "n1": { "min": 3, "max": 8 }
   },
   "text_template": "Consider the vector field $\\mathbf{F}(x,y)=\\langle \\ln(y)+2xy^3,\\ x/y+3x^2 y^2 \\rangle$.\n\nA. Verify that $\\mathbf{F}$ is conservative.\n\nB. Find a potential function $f(x,y)$ such that $\\nabla f = \\mathbf{F}$.\n\nC. Evaluate the line integral $\\displaystyle \\int_C \\mathbf{F}\\cdot d\\mathbf{r}$ along the curve $\\mathbf{r}(t)=\\langle t-{n1},\\ t \\rangle$ for $1\\le t\\le 2$ using the Fundamental Theorem for Line Integrals.",
-  "solution_template": "Write $\\mathbf{F}(x,y)=\\langle P(x,y),Q(x,y)\\rangle$ with\n\\[ P(x,y)=\\ln(y)+2xy^3, \\qquad Q(x,y)=x/y+3x^2y^2. \\]\nCompute the mixed partial derivatives:\n\\[ P_y = \\frac{\\partial}{\\partial y}(\\ln y + 2xy^3) = \\frac{1}{y} + 6xy^2, \\]\n\\[ Q_x = \\frac{\\partial}{\\partial x}(x/y + 3x^2y^2) = \\frac{1}{y} + 6xy^2. \\]\nSince $P_y = Q_x$ on the domain $y>0$, the field is conservative there.\n\nTo find a potential function, integrate $P$ with respect to $x$:\n\\[ f(x,y)=\\int (\\ln y + 2xy^3)\\,dx = x\\ln y + x^2y^3 + g(y), \\]\nwhere $g$ depends only on $y$. Differentiate this with respect to $y$:\n\\[ f_y(x,y) = x/y + 3x^2y^2 + g'(y). \\]\nSet $f_y$ equal to $Q(x,y)$:\n\\[ x/y + 3x^2y^2 + g'(y) = x/y + 3x^2y^2, \\]\nso $g'(y)=0$ and $g$ is constant. We may take\n\\[ f(x,y)=x\\ln y + x^2y^3 \\]\nas a potential function.\n\nFor the line integral along $C$ with $\\mathbf{r}(t)=\\langle t-{n1}, t \\rangle$ and $1\\le t\\le 2$, use the Fundamental Theorem for Line Integrals:\n\\[ \\int_C \\mathbf{F}\\cdot d\\mathbf{r} = f(\\mathbf{r}(2)) - f(\\mathbf{r}(1)). \\]\nHere\n\\[ \\mathbf{r}(t) = (t-{n1}, t), \\]\nso you evaluate $f(t-{n1}, t)$ at $t=2$ and $t=1$ and subtract to obtain the value of the line integral."
+  "solution_template": "Write $\\mathbf{F}(x,y)=\\langle P(x,y),Q(x,y)\\rangle$ with\n$$P(x,y)=\\ln(y)+2xy^3, \\qquad Q(x,y)=x/y+3x^2y^2.$$ Then\n$$P_y = \\frac{\\partial P}{\\partial y} = 1/y + 6xy^2, \\qquad Q_x = \\frac{\\partial Q}{\\partial x} = 1/y + 6xy^2.$$ Since $P_y = Q_x$ on $y>0$, the field is conservative there.\n\nTo find a potential, integrate $P$ with respect to $x$:\n$$f(x,y)=\\int (\\ln y + 2xy^3)\\,dx = x\\ln y + x^2y^3 + g(y),$$ where $g$ depends only on $y$. Differentiate with respect to $y$:\n$$f_y(x,y) = x/y + 3x^2y^2 + g'(y).$$ Set this equal to $Q(x,y)$:\n$$x/y + 3x^2y^2 + g'(y) = x/y + 3x^2y^2,$$ so $g'(y)=0$ and we may take\n$$f(x,y)=x\\ln y + x^2y^3$$ as a potential function.\n\nFor the line integral along $\\mathbf{r}(t)=\\langle t-{n1}, t \\rangle$ with $1\\le t\\le 2$, use the Fundamental Theorem for Line Integrals:\n$$\\int_C \\mathbf{F}\\cdot d\\mathbf{r} = f(\\mathbf{r}(2)) - f(\\mathbf{r}(1)).$$ Here\n$$\\mathbf{r}(t) = (t-{n1}, t),$$ so compute $f(t-{n1},t)$ at $t=2$ and $t=1$ and subtract to obtain the value of the line integral."
 }
 ]

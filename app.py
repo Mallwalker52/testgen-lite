@@ -340,7 +340,7 @@ def make_key_markdown():
 
 
 # ---------- UI Layout ----------
-st.title("TestGen Lite – Question Picker + Answer Key")
+st.title("TestGen Lite")
 
 if not QUESTIONS:
     st.stop()
@@ -480,8 +480,14 @@ with col_bank:
                     preview_text = q.get("text", "")
                     preview_solution = q.get("solution", "")
 
-                    # Variant-based (old style)
+                    # Variant-based (old style): use first variant as a sample if base text/solution are empty
                     variants = q.get("variants", [])
+                    if isinstance(variants, list) and variants:
+                        first = variants[0]
+                        if not preview_text:
+                            preview_text = first.get("text", "")
+                        if not preview_solution:
+                            preview_solution = first.get("solution", "")
 
                     # Param-based (new style)
                     if "params" in q and isinstance(q.get("params"), dict):
