@@ -120,21 +120,29 @@ def filtered_questions(course_filter, static_filter, qtype_filter, topic_filter,
 def add_to_test(ids_to_add):
     """
     Add one instance per qid, allowing duplicates.
-
-    For non-static questions with variants, pick a variant each time.
+    For:
+      - non-static with 'variants': randomly choose a variant index.
+      - questions with 'params': generate a concrete params dict and store it.
     """
     for qid in ids_to_add:
         q = Q_BY_ID.get(qid)
         if not q:
             continue
 
-        variant_idx = None
+        inst = {"qid": qid, "variant": None}
+
+        # Variant-based algorithmic questions (old style)
         if not q.get("static", True) and "variants" in q:
             variants = q.get("variants", [])
             if isinstance(variants, list) and variants:
-                variant_idx = random.randrange(len(variants))
+                inst["variant"] = random.randrange(len(variants))
 
-        instances.append({"qid": qid, "variant": variant_idx})
+        # Parameter-based algorithmic questions (new style)
+        if "params" in q and isinstance(q.get("params"), dict):
+            inst["params"] = generate_params_for_question(q)
+
+        instances.append(inst)
+
 
 
 def move_up(index: int):
@@ -169,29 +177,77 @@ def regenerate_variant(index: int):
     choices = [i for i in range(len(variants)) if i != current] or list(range(len(variants)))
     inst_obj["variant"] = random.choice(choices)
 
+def generate_params_for_question(q):
+    """
+    Given a question with a 'params' spec, return a dict of concrete values.
+    Supports:
+      - { "min": a, "max": b }  -> random integer in [a, b]
+      - { "expr": "n1 + n2" }   -> simple expression using previously defined params
+    """
+    spec = q.get("params", {})
+    values = {}
+
+    for name, rule in spec.items():
+        if isinstance(rule, dict) and "min" in rule and "max" in rule:
+            # Integer range parameter
+            values[name] = random.randint(rule["min"], rule["max"])
+        elif isinstance(rule, dict) and "expr" in rule:
+            expr = rule["expr"]
+            # Evaluate expression using already-defined values (e.g., n3 = n1 + n2)
+            # Restricted eval: no builtins, only existing params
+            values[name] = eval(expr, {}, values)
+        else:
+            # If it's a plain value or something else, just copy it
+            values[name] = rule
+
+    return values
+
 def reset_test():
     st.session_state["instances"] = []
 
 def get_instance_question(inst_obj):
-    """Return the concrete question (with variant applied if needed)."""
+    """
+    Return the concrete question for this instance:
+      - If it uses 'variants', pick the stored variant.
+      - If it uses 'params' + templates, render them with the stored params.
+    """
     qid = inst_obj["qid"]
     base = Q_BY_ID.get(qid)
     if not base:
         return None
 
-    variant_idx = inst_obj.get("variant", None)
+    # Start from base metadata
+    q = dict(base)
+
+    # 1) Variant-based logic (old style)
+    variant_idx = inst_obj.get("variant")
     variants = base.get("variants", [])
 
-    if variant_idx is None or base.get("static", True) or not variants:
-        # Static or no variants: use base question
-        return base
+    if (
+        not base.get("static", True)
+        and isinstance(variants, list)
+        and variants
+        and variant_idx is not None
+    ):
+        v = variants[variant_idx]
+        q["text"] = v.get("text", base.get("text", ""))
+        q["solution"] = v.get("solution", base.get("solution", ""))
 
-    # Use chosen variant, overriding text/solution
-    variant = variants[variant_idx]
-    q = dict(base)  # shallow copy metadata
-    q["text"] = variant.get("text", base.get("text", ""))
-    q["solution"] = variant.get("solution", base.get("solution", ""))
+    # 2) Parameter-based logic (new style)
+    params = inst_obj.get("params")
+
+    # If there are templates and params, render them
+    if params and "text_template" in base:
+        q["text"] = base["text_template"].format(**params)
+    if params and "solution_template" in base:
+        q["solution"] = base["solution_template"].format(**params)
+
+    # Fallbacks: make sure text/solution exist
+    q.setdefault("text", base.get("text", ""))
+    q.setdefault("solution", base.get("solution", ""))
+
     return q
+
 
 
 def make_test_markdown():

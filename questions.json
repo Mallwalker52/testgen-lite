@@ -40,5 +40,44 @@
       }
     ],
     "points": 4
-  }
+  },
+  {
+  "id": "M2760_FLUX_N123",
+  "courses": ["Math 2760"],
+  "static": false,
+  "qtypes": ["Open-ended", "Algorithmic", "Computational"],
+  "topics": ["Flux", "Vector fields", "Line integrals"],
+  "params": {
+    "n1": { "min": 3, "max": 8 },
+    "n2": { "min": 3, "max": 10 },
+    "n3": { "expr": "n1 + n2" }
+  },
+  "text_template": "Compute the flux of $\\mathbf{F}(x,y)=\\langle x, y^2 \\rangle$ across the segment from $(0,{n1})$ to $({n2},{n3})$ using the right-hand normal vector $\\mathbf{n}(t)=\\langle y'(t), -x'(t) \\rangle$.",
+  "solution_template": "Here $n_1={n1}$, $n_2={n2}$, and $n_3=n_1+n_2={n3}$. Parameterize the line segment from $(0,{n1})$ to $({n2},{n3})$ by $\\mathbf{r}(t)=\\langle {n2}t,\\ {n1} + ({n3}-{n1})t\\rangle$, $0\\le t\\le 1$. Then $\\mathbf{r}'(t)=\\langle {n2},\\ {n3}-{n1} \\rangle$, and a right-hand normal is $\\mathbf{n}(t)=\\langle y'(t),-x'(t)\\rangle = \\langle {n3}-{n1},\\ -{n2} \\rangle$. Compute $\\mathbf{F}(\\mathbf{r}(t))=\\langle {n2}t,\\ ( {n1} + ({n3}-{n1})t )^2 \\rangle$ and then integrate $\\mathbf{F}(\\mathbf{r}(t))\\cdot \\mathbf{n}(t)$ from 0 to 1 to obtain the flux."
+},
+{
+  "id": "M2760_CIRC_N1",
+  "courses": ["Math 2760"],
+  "static": false,
+  "qtypes": ["Open-ended", "Algorithmic", "Conceptual"],
+  "topics": ["Circulation", "Vector fields", "Line integrals"],
+  "params": {
+    "n1": { "min": 3, "max": 8 }
+  },
+  "text_template": "Let $\\mathbf{F}(x,y)=\\langle -x, y \\rangle$. Compute the circulation $\\displaystyle \\oint_C \\mathbf{F}\\cdot d\\mathbf{r}$ around the curve $\\mathbf{r}(t)=\\langle {n1}\\cos t,\\ -{n1}\\sin t \\rangle$, $0\\le t\\le 2\\pi$.",
+  "solution_template": "Here $n_1={n1}$. We have $\\mathbf{F}(x,y)=\\langle -x,y\\rangle$ and $C$ is the circle of radius ${n1}$ traced clockwise. Compute the scalar curl: $\\frac{\\partial}{\\partial x}(y) - \\frac{\\partial}{\\partial y}(-x) = 0 - 0 = 0$. Thus $\\mathbf{F}$ is conservative on $\\mathbb{R}^2$, so the circulation around any closed curve is 0. Therefore $\\oint_C \\mathbf{F}\\cdot d\\mathbf{r} = 0$, independent of ${n1}$."
+},
+{
+  "id": "M2760_CONSERVATIVE_N1",
+  "courses": ["Math 2760"],
+  "static": false,
+  "qtypes": ["Open-ended", "Algorithmic", "Conceptual"],
+  "topics": ["Conservative fields", "Potential functions", "Line integrals"],
+  "params": {
+    "n1": { "min": 3, "max": 8 }
+  },
+  "text_template": "Consider the vector field $\\mathbf{F}(x,y)=\\langle \\ln(y)+2xy^3,\\ x/y+3x^2 y^2 \\rangle$.\\\\nA. Verify that $\\mathbf{F}$ is conservative.\\\\nB. Find a potential function $f(x,y)$ such that $\\nabla f = \\mathbf{F}$.\\\\nC. Evaluate the line integral $\\displaystyle \\int_C \\mathbf{F}\\cdot d\\mathbf{r}$ along the curve $\\mathbf{r}(t)=\\langle t-{n1},\\ t \\rangle$ for $1\\le t\\le 2$ using the Fundamental Theorem for Line Integrals.",
+  "solution_template": "Let $P(x,y)=\\ln(y)+2xy^3$ and $Q(x,y)=x/y+3x^2 y^2$. Then $P_y = 1/y + 6xy^2$ and $Q_x = 1/y + 6xy^2$, so $P_y=Q_x$ on $y>0$ and $\\mathbf{F}$ is conservative there. To find a potential, integrate $P$ with respect to $x$: $f(x,y)=x\\ln y + x^2 y^3 + g(y)$. Differentiating with respect to $y$ gives $f_y = x/y + 3x^2 y^2 + g'(y)$. Setting this equal to $Q(x,y)$ implies $g'(y)=0$, so we may take $g(y)$ constant and choose $f(x,y)=x\\ln y + x^2 y^3$. For the line integral along $\\mathbf{r}(t)=\\langle t-{n1}, t \\rangle$, $1\\le t\\le 2$, use the Fundamental Theorem for Line Integrals: $\\displaystyle \\int_C \\mathbf{F}\\cdot d\\mathbf{r} = f(\\mathbf{r}(2)) - f(\\mathbf{r}(1))$, where $\\mathbf{r}(t) = (t-{n1}, t)$ and $n_1={n1}$."
+}
+
 ]
