@@ -1,0 +1,153 @@
+[
+  {
+    "id": "M2000_LA_001",
+    "courses": ["Math 2000"],
+    "static": true,
+    "qtypes": ["Open-ended", "Computational"],
+    "topics": ["Row reduction", "Matrices"],
+    "text": "Row reduce the matrix $$A = \\begin{bmatrix}1 & 2 \\\\ 3 & 4\\end{bmatrix}.$$",
+    "solution": "Subtract $3R_1$ from $R_2$ to get $$\\begin{bmatrix}1 & 2 \\\\ 0 & -2\\end{bmatrix}.$$ Then divide $R_2$ by $-2$ to get $$\\begin{bmatrix}1 & 2 \\\\ 0 & 1\\end{bmatrix}.$$ Finally, replace $R_1$ with $R_1 - 2R_2$ to obtain $$\\begin{bmatrix}1 & 0 \\\\ 0 & 1\\end{bmatrix}.$$ So $\\operatorname{RREF}(A) = I_2.$",
+    "points": 5
+  },
+  {
+    "id": "M2760_VC_010",
+    "courses": ["Math 2760"],
+    "static": true,
+    "qtypes": ["Open-ended", "Conceptual"],
+    "topics": ["Line integrals", "Green's Theorem"],
+    "text": "Compute $$\\oint_C (y\\,dx + x\\,dy)$$ where $C$ is the unit circle $x^2 + y^2 = 1$ oriented counterclockwise.",
+    "solution": "Parametrize $C$ by $x = \\cos t$, $y = \\sin t$, $0 \\le t \\le 2\\pi$. Then $dx = -\\sin t\\,dt$, $dy = \\cos t\\,dt$. The integrand is\n$$y\\,dx + x\\,dy = \\sin t(-\\sin t\\,dt) + \\cos t(\\cos t\\,dt) = -\\sin^2 t\\,dt + \\cos^2 t\\,dt = \\cos(2t)\\,dt.$$ So\n$$\\oint_C (y\\,dx + x\\,dy) = \\int_0^{2\\pi} \\cos(2t)\\,dt = \\left[\\tfrac12 \\sin(2t)\\right]_0^{2\\pi} = 0.$$",
+    "points": 8
+  },
+  {
+    "id": "M2760_TRIG_001",
+    "courses": ["Math 2760"],
+    "static": false,
+    "qtypes": ["Open-ended", "Algorithmic"],
+    "topics": ["Trig integrals", "Practice"],
+    "variants": [
+      {
+        "text": "Evaluate $$\\int \\cos(2x)\\,dx.$$",
+        "solution": "We have $$\\int \\cos(2x)\\,dx = \\tfrac12 \\sin(2x) + C.$$"
+      },
+      {
+        "text": "Evaluate $$\\int \\cos(5x)\\,dx.$$",
+        "solution": "We have $$\\int \\cos(5x)\\,dx = \\tfrac15 \\sin(5x) + C.$$"
+      },
+      {
+        "text": "Evaluate $$\\int \\cos(7x)\\,dx.$$",
+        "solution": "We have $$\\int \\cos(7x)\\,dx = \\tfrac17 \\sin(7x) + C.$$"
+      }
+    ],
+    "points": 4
+  },
+{
+  "id": "M2760_FLUX_N123",
+  "courses": ["Math 2760"],
+  "static": false,
+  "qtypes": ["Open-ended", "Algorithmic", "Computational"],
+  "topics": ["Flux", "Vector fields", "Line integrals"],
+  "params": {
+    "n1": { "min": 3, "max": 8 },
+    "n2": { "min": 3, "max": 10 },
+    "n3": { "expr": "n1 + n2" },
+
+    "phi_raw": {
+      "expr": "n2*(-n1*n1 - n1*n2 - (n2*n2)/3 + n2/2)"
+    },
+    "phi_val": {
+      "expr": "round(phi_raw, 2)"
+    }
+  },
+  "text_template": "Compute the flux of $\\mathbf F(x,y)=\\langle x, y^2 \\rangle$ across the segment from $(0,{n1})$ to $({n2},{n3})$ using the right-hand normal vector $\\mathbf n(t)=\\langle y'(t), -x'(t) \\rangle$.",
+  "solution_template": "Parameterize the segment from $(0,{n1})$ to $({n2},{n3})$ by $$\\mathbf r(t)=\\langle {n2}t, {n1} + ({n3}-{n1})t \\rangle,\\quad 0\\le t \\le 1.$$ Then $$\\mathbf r'(t)=\\langle {n2}, {n3}-{n1} \\rangle$$ and a right-hand normal vector is $$\\mathbf n(t)=\\langle y'(t), -x'(t) \\rangle = \\langle {n3}-{n1}, -{n2} \\rangle.$$ Along this line, the flux of $\\mathbf F$ across the curve has the general form $$\\Phi = b \\int_0^1 \\bigl( b t - (a + b t)^2 \\bigr) \\, dt,$$ where $a$ is the starting $y$-coordinate and $b$ is the change in $y$ along the segment. For this segment, $a={n1}$ and $b={n2}$, so $$\\Phi = {n2} \\int_0^1 \\bigl( {n2} t - ( {n1} + {n2} t )^2 \\bigr) \\, dt.$$ Evaluating this integral gives the numerical flux $$\\Phi \\approx {phi_val}.$$"
+}
+,
+{
+  "id": "M2760_CIRC_N1",
+  "courses": ["Math 2760"],
+  "static": false,
+  "qtypes": ["Open-ended", "Algorithmic", "Conceptual"],
+  "topics": ["Circulation", "Vector fields", "Line integrals"],
+  "params": {
+    "n1": { "min": 3, "max": 8 }
+  },
+  "text_template": "Let $\\mathbf{F}(x,y)=\\langle -x, y \\rangle$. Compute the circulation $\\displaystyle \\oint_C \\mathbf{F}\\cdot d\\mathbf{r}$ around the curve $\\mathbf{r}(t)=\\langle {n1}\\cos t,\\ -{n1}\\sin t \\rangle$, $0\\le t\\le 2\\pi$.",
+  "solution_template": "The curve $C$ is the circle of radius ${n1}$ traced clockwise, and $\\mathbf{F}(x,y)=\\langle -x,y\\rangle$. Compute the scalar curl:\n$$\\frac{\\partial}{\\partial x}(y) - \\frac{\\partial}{\\partial y}(-x) = 0 - 0 = 0.$$ Since the curl is zero everywhere, $\\mathbf{F}$ is conservative on $\\mathbb{R}^2$. For a conservative field, the circulation around any closed curve is zero, so\n$$\\oint_C \\mathbf{F}\\cdot d\\mathbf{r} = 0.$$"
+},
+{
+  "id": "M2760_CONSERVATIVE_N1",
+  "courses": ["Math 2760"],
+  "static": false,
+  "qtypes": ["Open-ended", "Algorithmic", "Conceptual"],
+  "topics": ["Conservative fields", "Potential functions", "Line integrals"],
+  "params": {
+    "n1": { "min": 3, "max": 8 }
+  },
+  "text_template": "Consider the vector field $\\mathbf{F}(x,y)=\\langle \\ln(y)+2xy^3,\\ x/y+3x^2 y^2 \\rangle$.\n\nA. Verify that $\\mathbf{F}$ is conservative.\n\nB. Find a potential function $f(x,y)$ such that $\\nabla f = \\mathbf{F}$.\n\nC. Evaluate the line integral $\\displaystyle \\int_C \\mathbf{F}\\cdot d\\mathbf{r}$ along the curve $\\mathbf{r}(t)=\\langle t-{n1},\\ t \\rangle$ for $1\\le t\\le 2$ using the Fundamental Theorem for Line Integrals.",
+  "solution_template": "Write $\\mathbf{F}(x,y)=\\langle P(x,y),Q(x,y)\\rangle$ with\n$$P(x,y)=\\ln(y)+2xy^3, \\qquad Q(x,y)=x/y+3x^2y^2.$$ Then\n$$P_y = \\frac{\\partial P}{\\partial y} = 1/y + 6xy^2, \\qquad Q_x = \\frac{\\partial Q}{\\partial x} = 1/y + 6xy^2.$$ Since $P_y = Q_x$ on $y>0$, the field is conservative there.\n\nTo find a potential, integrate $P$ with respect to $x$:\n$$f(x,y)=\\int (\\ln y + 2xy^3)\\,dx = x\\ln y + x^2y^3 + g(y),$$ where $g$ depends only on $y$. Differentiate with respect to $y$:\n$$f_y(x,y) = x/y + 3x^2y^2 + g'(y).$$ Set this equal to $Q(x,y)$:\n$$x/y + 3x^2y^2 + g'(y) = x/y + 3x^2y^2,$$ so $g'(y)=0$ and we may take\n$$f(x,y)=x\\ln y + x^2y^3$$ as a potential function.\n\nFor the line integral along $\\mathbf{r}(t)=\\langle t-{n1}, t \\rangle$ with $1\\le t\\le 2$, use the Fundamental Theorem for Line Integrals:\n$$\\int_C \\mathbf{F}\\cdot d\\mathbf{r} = f(\\mathbf{r}(2)) - f(\\mathbf{r}(1)).$$ Here\n$$\\mathbf{r}(t) = (t-{n1}, t),$$ so compute $f(t-{n1},t)$ at $t=2$ and $t=1$ and subtract to obtain the value of the line integral."
+},   {
+    "id": "M2760_CYL_CART_SURFACE",
+    "courses": ["Math 2760"],
+    "static": true,
+    "qtypes": ["Open-ended"],
+    "topics": ["Cylindrical coordinates", "Coordinate conversions"],
+    "params": {
+      "n1": { "min": 1, "max": 9 }
+    },
+    "text_template": "Consider the equation $$r = {n1} \\cos(\\theta)$$ in cylindrical coordinates.\nA. Convert the equation from cylindrical to Cartesian coordinates.\nB. Identify the surface.",
+    "solution_template": "In cylindrical coordinates we have x = r cos(theta), y = r sin(theta), and r^2 = x^2 + y^2.\nStarting from r = {n1} cos(theta), multiply both sides by r to get\nr^2 = {n1} r cos(theta).\nSince r cos(theta) = x and r^2 = x^2 + y^2, this becomes\nx^2 + y^2 = {n1} x.\nRewriting,\nx^2 - {n1} x + y^2 = 0.\nComplete the square in x:\n(x - {n1}/2)^2 + y^2 = ({n1}/2)^2.\nThis is a circle in the xy-plane with center ( {n1}/2, 0 ) and radius {n1}/2.\nIn three dimensions, this circle extends in the z-direction, so the surface is a circular cylinder of radius {n1}/2 centered along the line x = {n1}/2, y = 0 (axis parallel to the z-axis)."
+  },
+
+  {
+    "id": "M2760_SPHERE_CART_SURFACE",
+    "courses": ["Math 2760"],
+    "static": true,
+    "qtypes": ["Open-ended"],
+    "topics": ["Spherical coordinates", "Coordinate conversions"],
+    "params": {
+      "n1": { "min": 1, "max": 9 }
+    },
+    "text_template": "Consider the equation $$\\rho = {n1}\\sin(\\phi)$$ in spherical coordinates.\nA. Convert the equation from spherical to Cartesian coordinates.\nB. Identify the surface.",
+    "solution_template": "Use spherical coordinates with rho >= 0, 0 <= phi <= pi, 0 <= theta < 2pi, and the relations\nx = rho sin(phi) cos(theta), y = rho sin(phi) sin(theta), z = rho cos(phi).\nLet r = sqrt(x^2 + y^2). Then r = rho sin(phi) and z = rho cos(phi), and we also have r^2 + z^2 = rho^2.\nStarting from rho = {n1} sin(phi), substitute sin(phi) = r / rho to get\nrho = {n1} r / rho.\nThus\nrho^2 = {n1} r.\nUsing rho^2 = r^2 + z^2, we obtain\nr^2 + z^2 = {n1} r,\nor\nr^2 - {n1} r + z^2 = 0.\nComplete the square in r:\n(r - {n1}/2)^2 + z^2 = ({n1}/2)^2.\nIn cylindrical coordinates (r, theta, z) this is a circle of radius {n1}/2 centered at r = {n1}/2, z = 0 in the r z-plane.\nReplacing r by sqrt(x^2 + y^2) gives the Cartesian form\n(sqrt(x^2 + y^2) - {n1}/2)^2 + z^2 = ({n1}/2)^2.\nThis describes a torus (a horn torus) obtained by revolving the circle (r - {n1}/2)^2 + z^2 = ({n1}/2)^2 about the z-axis."
+  },
+
+  {
+    "id": "M2760_REWRITE_INTEGRAL_N1",
+    "courses": ["Math 2760"],
+    "static": false,
+    "qtypes": ["Open-ended", "Computational"],
+    "topics": ["Triple integrals", "Changing order of integration"],
+    "params": {
+      "n1": { "min": 1, "max": 9 }
+    },
+    "text_template": "Consider the integral\n$$\\int_0^2 \\int_0^x \\int_0^{x+y} f(x,y,z)\\,dz\\,dy\\,dx.$$\nA. Sketch the projection of the region onto the $xy$-plane.\nB. Rewrite the integral in the order $dx\\,dy\\,dz$.\nC. Evaluate the integral if $$f(x,y,z)=x + 2y + 3z + {n1}.$$",
+    "solution_template": "The region E is described by\n0 <= x <= 2,\n0 <= y <= x,\n0 <= z <= x + y.\n\nPart A: Projection onto the xy-plane.\nIgnoring z, the inequalities become\n0 <= x <= 2,\n0 <= y <= x.\nThis is the triangular region in the xy-plane bounded by y = 0, y = x, and x = 2.\n\nPart B: Rewrite in the order dx dy dz.\nWe must describe the same region E using bounds for x first, then y, then z.\nFrom the original description, one can show that:\nThe z-values in the region range from 0 to 4.\nFor 0 <= z <= 2, the allowed y-values range from 0 to 2.\nFor 2 <= z <= 4, the allowed y-values range from z - 2 to 2.\nFor each fixed z and y, x must satisfy y <= x <= 2 and z <= x + y, which gives x between max(y, z - y) and 2.\nThis leads to a piecewise description. One valid way to write the integral in the order dx dy dz is as a sum of four integrals:\n\nFor 0 <= z <= 2 and 0 <= y <= z/2, we have z - y <= x <= 2.\nFor 0 <= z <= 2 and z/2 <= y <= 2, we have y <= x <= 2.\nFor 2 <= z <= 4 and z - 2 <= y <= z/2, we have z - y <= x <= 2.\nFor 2 <= z <= 4 and z/2 <= y <= 2, we have y <= x <= 2.\n\nThus, one possible rewrite in the order dx dy dz is:\nIntegral over z from 0 to 2, y from 0 to z/2, x from z - y to 2,\nplus integral over z from 0 to 2, y from z/2 to 2, x from y to 2,\nplus integral over z from 2 to 4, y from z - 2 to z/2, x from z - y to 2,\nplus integral over z from 2 to 4, y from z/2 to 2, x from y to 2,\nwith the integrand f(x,y,z).\n\nPart C: Evaluate the integral with f(x,y,z) = x + 2y + 3z + {n1}.\nIt is easiest to evaluate the original integral:\nI = ∫(x=0 to 2) ∫(y=0 to x) ∫(z=0 to x + y) (x + 2y + 3z + {n1}) dz dy dx.\nFirst integrate with respect to z:\n∫(z=0 to x + y) (x + 2y + 3z + {n1}) dz\n= (x + 2y + {n1})(x + y) + (3/2)(x + y)^2.\nThen integrate that result with respect to y from 0 to x, and finally integrate with respect to x from 0 to 2.\nCarrying out these computations (for example, symbolically or by careful algebra) gives\nI = 4 {n1} + 80/3.\nSo the value of the integral is 4 {n1} + 80/3."
+  },
+
+  {
+    "id": "M2760_SPHERE_WEDGE_INT",
+    "courses": ["Math 2760"],
+    "static": false,
+    "qtypes": ["Open-ended", "Computational"],
+    "topics": ["Triple integrals", "Spherical coordinates"],
+    "params": {
+      "n1": { "min": 1, "max": 9 }
+    },
+    "text_template": "Evaluate the integral\n$$\\iiint_E (x^2 + y^2 + z^2 + {n1})\\,dV,$$\nwhere the region $E$ is described by\n$$0 \\le \\rho \\le 2, \\quad 0 \\le \\phi \\le \\frac{\\pi}{3}, \\quad 0 \\le \\theta \\le \\pi.$$",
+    "solution_template": "In spherical coordinates we have x^2 + y^2 + z^2 = rho^2, and the volume element is dV = rho^2 sin(phi) d rho d phi d theta.\nThus the integrand x^2 + y^2 + z^2 + {n1} becomes rho^2 + {n1}, and the integrand times the Jacobian is\n(rho^2 + {n1}) rho^2 sin(phi) = (rho^4 + {n1} rho^2) sin(phi).\nThe integral becomes\n∫(theta=0 to pi) ∫(phi=0 to pi/3) ∫(rho=0 to 2) (rho^4 + {n1} rho^2) sin(phi) d rho d phi d theta.\nFirst integrate with respect to rho:\n∫(rho=0 to 2) (rho^4 + {n1} rho^2) d rho\n= [rho^5 / 5 + {n1} rho^3 / 3] from 0 to 2\n= 32/5 + 8 {n1} / 3.\nNext integrate with respect to phi:\n∫(phi=0 to pi/3) sin(phi) d phi = 1/2.\nFinally integrate with respect to theta:\n∫(theta=0 to pi) d theta = pi.\nMultiplying these factors, the value of the integral is\nI = (32/5 + 8 {n1} / 3) * (1/2) * pi = pi (16/5 + 4 {n1} / 3)."
+  },
+
+  {
+    "id": "M2760_LINE_INT_ARCLENGTH",
+    "courses": ["Math 2760"],
+    "static": false,
+    "qtypes": ["Open-ended", "Computational"],
+    "topics": ["Line integrals", "Arc length"],
+    "params": {
+      "n1": { "min": 1, "max": 9 }
+    },
+    "text_template": "Let $C$ be the curve $$\\mathbf r(t)=\\langle t, t^2, t^3 \\rangle, \\quad 0 \\le t \\le 1.$$ Evaluate the line integral\n$$\\int_C (x + y + z + {n1})\,ds,$$\nusing the definition\n$$\\int_C f(x,y,z)\,ds = \\int_0^1 f(\\mathbf r(t)) \\, \\|\\mathbf r'(t)\\|\,dt.$$",
+    "solution_template": "The curve is r(t) = (t, t^2, t^3) for 0 <= t <= 1.\nFirst compute r'(t):\nr'(t) = (1, 2t, 3t^2).\nThen the speed is\n||r'(t)|| = sqrt(1 + 4 t^2 + 9 t^4).\nThe scalar field along the curve is\nf(r(t)) = x + y + z + {n1} = t + t^2 + t^3 + {n1}.\nBy the definition of the line integral with respect to arc length,\n∫_C (x + y + z + {n1}) ds = ∫(t=0 to 1) (t + t^2 + t^3 + {n1}) sqrt(1 + 4 t^2 + 9 t^4) dt.\nThis integral does not have a simple elementary antiderivative, so the exact value is given by this single-variable integral expression.\nFor purposes of setup, the correct evaluation using the definition is\n∫(t=0 to 1) (t + t^2 + t^3 + {n1}) sqrt(1 + 4 t^2 + 9 t^4) dt."
+  }
+]
