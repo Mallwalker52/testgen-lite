@@ -5,25 +5,43 @@ from pathlib import Path
 import streamlit as st
 from string import Formatter
 
-# ---------- Load question bank ----------
+# ---------- Load question bank for a given file ----------
+
 def load_questions(path: Path):
     if not path.exists():
-        st.error(f"questions.json not found at: {path}")
+        st.error(f"Questions file not found at: {path}")
         return []
     try:
         with path.open("r", encoding="utf-8") as f:
             data = json.load(f)
-            if not isinstance(data, list):
-                st.error("questions.json must contain a list of questions (a JSON array).")
-                return []
-            return data
+        if not isinstance(data, list):
+            st.error(f"{path} must contain a list of questions (a JSON array).")
+            return []
+        return data
     except Exception as e:
-        st.error(f"Error loading questions.json: {e}")
+        st.error(f"Error loading questions from {path}: {e}")
         return []
 
 
-QUESTIONS = load_questions(Path("questions.json"))
+# ---------- Map courses to their question files ----------
+
+COURSE_FILES = {
+    "Math 2760": Path("questions/math2760.json"),
+    # Add or remove courses here as needed
+}
+
+# Sidebar selector to choose which course bank to use
+selected_course = st.sidebar.selectbox(
+    "Select course",
+    options=list(COURSE_FILES.keys())
+)
+
+questions_path = COURSE_FILES[selected_course]
+
+# Load questions for the selected course
+QUESTIONS = load_questions(questions_path)
 Q_BY_ID = {q["id"]: q for q in QUESTIONS}
+
 
 
 # ---------- Session state ----------
