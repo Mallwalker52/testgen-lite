@@ -233,7 +233,7 @@ all_courses = sorted({c for q in QUESTIONS for c in q.get("courses", [])})
 course_filter = st.sidebar.multiselect(
     "Course",
     options=all_courses,
-    default=all_courses if all_courses else [],
+    default(all_courses if all_courses else []),
 )
 
 # Static / Non-static
@@ -295,6 +295,7 @@ with col_bank:
         if st.button("Add selected to test"):
             qids_to_add = [id_by_label[label] for label in selected_labels]
             add_instances(qids_to_add)
+            st.rerun()
 
         # Preview area
         with st.expander("Preview from bank"):
@@ -341,7 +342,7 @@ with col_bank:
                     # Button to add this single question instance directly
                     if st.button("Add this question to test", key=f"preview_add_{qid}"):
                         add_single_instance(qid)
-                        st.experimental_rerun()
+                        st.rerun()
 
 # ----- Right: Current test -----
 with col_test:
@@ -371,22 +372,22 @@ with col_test:
                 with bcol1:
                     if st.button("⬆️ Up", key=f"up_{idx}"):
                         move_up(idx)
-                        st.experimental_rerun()
+                        st.rerun()
                 with bcol2:
                     if st.button("⬇️ Down", key=f"down_{idx}"):
                         move_down(idx)
-                        st.experimental_rerun()
+                        st.rerun()
                 with bcol3:
                     if st.button("🗑 Remove", key=f"remove_{idx}"):
                         remove_instance(idx)
-                        st.experimental_rerun()
+                        st.rerun()
                 with bcol4:
                     # Only show regenerate button for non-static questions with variants
                     base = Q_BY_ID.get(inst_obj["qid"])
                     if base and (not base.get("static", True)) and base.get("variants"):
                         if st.button("🔄 Regenerate", key=f"regen_{idx}"):
                             regenerate_variant(idx)
-                            st.experimental_rerun()
+                            st.rerun()
 
     st.markdown("---")
     st.subheader("Export")
