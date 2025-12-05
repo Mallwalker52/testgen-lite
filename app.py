@@ -248,16 +248,22 @@ topic_filter = st.sidebar.multiselect(
     default=[],  # no topics selected initially
 )
 
-# Text search (with clear button)
+# Text search (with clear button using a generation counter)
+if "search_generation" not in st.session_state:
+    st.session_state["search_generation"] = 0
+
+# Clicking this will bump the generation and rerun the app,
+# so the text_input gets a fresh key and clears itself.
+if st.sidebar.button("Clear search"):
+    st.session_state["search_generation"] += 1
+    st.rerun()
+
+search_key = f"search_text_input_{st.session_state['search_generation']}"
 search_text = st.sidebar.text_input(
     "Search in question / topics",
-    key="search_text_input",
+    key=search_key,
 )
 
-if st.sidebar.button("Clear search"):
-    # Reset the text input and rerun the app
-    st.session_state["search_text_input"] = ""
-    st.rerun()
 
 # ----- Main columns -----
 col_bank, col_test = st.columns(2)
