@@ -210,6 +210,29 @@ def generate_params_for_question(q):
 
     return values
 
+def regenerate_variant(idx):
+    """
+    Re-roll the randomness for a given test instance:
+      - If it uses 'variants', pick a new random variant index.
+      - If it uses 'params', generate a new params dict.
+    """
+    inst = instances[idx]
+    qid = inst.get("qid")
+    q = Q_BY_ID.get(qid)
+    if not q:
+        return
+
+    # 1) Old-style variant-based questions
+    if not q.get("static", True) and "variants" in q:
+        variants = q.get("variants", [])
+        if isinstance(variants, list) and variants:
+            inst["variant"] = random.randrange(len(variants))
+
+    # 2) New param-based questions
+    if "params" in q and isinstance(q.get("params"), dict):
+        inst["params"] = generate_params_for_question(q)
+
+
 def reset_test():
     st.session_state["instances"] = []
 
