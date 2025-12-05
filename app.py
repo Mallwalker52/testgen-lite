@@ -160,6 +160,8 @@ def regenerate_variant(index: int):
     choices = [i for i in range(len(variants)) if i != current] or list(range(len(variants)))
     inst_obj["variant"] = random.choice(choices)
 
+def reset_test():
+    st.session_state["instances"] = []
 
 def get_instance_question(inst_obj):
     """Return the concrete question (with variant applied if needed)."""
@@ -347,7 +349,10 @@ with col_bank:
 # =======================
 with col_test:
     st.subheader("Current Test")
-
+    # Reset entire test
+    if st.button("🔄 Reset test (clear all questions)"):
+        reset_test()
+        st.rerun()
     if not instances:
         st.write("No questions selected yet.")
     else:
