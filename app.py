@@ -162,20 +162,28 @@ def remove_from_test(index: int):
         instances.pop(index)
 
 
-def regenerate_variant(index: int):
-    """Pick a new variant for the given instance, if possible."""
-    if index < 0 or index >= len(instances):
+def regenerate_instance(idx):
+    """
+    Re-roll the randomness for a given test instance:
+      - If it uses variants, pick a new random variant index.
+      - If it uses params, generate a new params dict.
+    """
+    inst = instances[idx]
+    qid = inst.get("qid")
+    q = Q_BY_ID.get(qid)
+    if not q:
         return
-    inst_obj = instances[index]
-    base = Q_BY_ID.get(inst_obj["qid"])
-    if not base or base.get("static", True):
-        return
-    variants = base.get("variants", [])
-    if not variants:
-        return
-    current = inst_obj.get("variant")
-    choices = [i for i in range(len(variants)) if i != current] or list(range(len(variants)))
-    inst_obj["variant"] = random.choice(choices)
+
+    # 1) Variant-based questions (old style)
+    if not q.get("static", True) and "variants" in q:
+        variants = q.get("variants", [])
+        if isinstance(variants, list) and variants:
+            inst["variant"] = random.randrange(len(variants))
+
+    # 2) Param-based questions (new style)
+    if "params" in q and isinstance(q.get("params"), dict):
+        inst["params"] = generate_params_for_question(q)
+
 
 def generate_params_for_question(q):
     """
@@ -405,50 +413,71 @@ with col_bank:
             st.rerun()
 
         # Preview from bank
-        with st.expander("Preview from bank"):
-            preview_label = st.selectbox(
-                "Choose a question to preview",
-                options=["(none)"] + options,
-                key="bank_preview_select",
-            )
-            if preview_label != "(none)":
-                qid = id_by_label[preview_label]
-                base = Q_BY_ID.get(qid)
-                if base:
-                    is_static = base.get("static", True)
-                    variants = base.get("variants", [])
+with st.expander("Preview from bank"):
+    preview_label = st.selectbox(
+        "Choose a question to preview",
+        options=["(none)"] + options,
+        key="bank_preview_select",
+    )
 
-                    st.markdown(f"**ID:** {base['id']}")
-                    st.markdown(f"**Courses:** {', '.join(base.get('courses', [])) or '—'}")
-                    st.markdown(f"**Types:** {', '.join(base.get('qtypes', [])) or '—'}")
-                    st.markdown(f"**Topics:** {', '.join(get_question_topics(base)) or '—'}")
-                    st.markdown(
-                        f"**Static / Non-static:** "
-                        f"{'Static' if is_static else 'Non-static (algorithmic)'}"
+    if preview_label != "(none)":
+        qid = id_by_label[preview_label]
+        q = Q_BY_ID.get(qid)
+
+        if q:
+            # Basic metadata
+            st.markdown(f"**ID:** {q.get('id', qid)}")
+
+            courses = ", ".join(q.get("courses", []))
+            if courses:
+                st.markdown(f"**Courses:** {courses}")
+
+            qtypes = ", ".join(q.get("qtypes", []))
+            if qtypes:
+                st.markdown(f"**Types:** {qtypes}")
+
+            topics = ", ".join(get_question_topics(q))
+            if topics:
+                st.markdown(f"**Topics:** {topics}")
+
+            is_static = q.get("static", True)
+            static_label = "Static" if is_static else "Non-static (algorithmic)"
+            st.markdown(f"**Static / Non-static:** {static_label}")
+
+            # --- Build a preview text/solution ---------------------
+
+            # Start from base text/solution if present
+            preview_text = q.get("text", "")
+            preview_solution = q.get("solution", "")
+
+            # If this is a variant-based question, just preview base text
+            # (or you could preview the first variant if you really want)
+            variants = q.get("variants", [])
+
+            # If this is a param-based question, generate sample params
+            if "params" in q and isinstance(q.get("params"), dict):
+                sample_params = generate_params_for_question(q)
+
+                if "text_template" in q:
+                    preview_text = render_template(q["text_template"], sample_params)
+                if "solution_template" in q:
+                    preview_solution = render_template(
+                        q["solution_template"], sample_params
                     )
 
-                    # Example question + solution
-                    if is_static or base.get("text"):
-                        st.markdown("**Question:**")
-                        st.markdown(base.get("text", ""))
-                        st.markdown("**Solution:**")
-                        st.markdown(base.get("solution", ""))
-                    else:
-                        # Non-static with only variants: preview the first one
-                        if variants:
-                            example = variants[0]
-                            st.markdown("**Question (example variant):**")
-                            st.markdown(example.get("text", ""))
+            # --- Display question / solution or fallback message ----
+            if preview_text:
+                st.markdown("**Question:**")
+                st.markdown(preview_text)
+            else:
+                st.markdown("_No question text defined for this item._")
 
-                            st.markdown("**Solution (one possible):**")
-                            st.markdown(example.get("solution", ""))
-                        else:
-                            st.write("No text or variants defined for this question.")
+            if preview_solution:
+                st.markdown("**Solution (one possible):**")
+                st.markdown(preview_solution)
+            else:
+                st.markdown("_No solution text defined for this item._")
 
-                    # Add this single question directly from preview
-                    if st.button("Add this question to test", key=f"add_single_{qid}"):
-                        add_to_test([qid])
-                        st.rerun()
 
 
 # =======================
