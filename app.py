@@ -248,8 +248,16 @@ topic_filter = st.sidebar.multiselect(
     default=[],  # no topics selected initially
 )
 
-# Text search
-search_text = st.sidebar.text_input("Search in question text", value="")
+# Text search (with clear button)
+search_text = st.sidebar.text_input(
+    "Search in question / topics",
+    key="search_text_input",
+)
+
+if st.sidebar.button("Clear search"):
+    # Reset the text input and rerun the app
+    st.session_state["search_text_input"] = ""
+    st.rerun()
 
 # ----- Main columns -----
 col_bank, col_test = st.columns(2)
