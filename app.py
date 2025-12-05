@@ -74,11 +74,17 @@ def question_matches_filters(q, course_filter, static_filter, qtype_filter, topi
     if topic_filter and not any(t in topic_filter for t in q_topics):
         return False
 
-    # Search text – look in base text AND all variant texts
+    # Search text – look in base text, variants, topics, id, etc.
     if search_text.strip():
         s = search_text.lower()
 
-        text_parts = [q.get("text", "")]
+        text_parts = [
+            q.get("text", ""),
+            " ".join(q_topics),
+            " ".join(q_qtypes),
+            " ".join(q_courses),
+            q.get("id", ""),
+        ]
 
         variants = q.get("variants", [])
         if isinstance(variants, list):
@@ -90,6 +96,7 @@ def question_matches_filters(q, course_filter, static_filter, qtype_filter, topi
             return False
 
     return True
+
 
 def filtered_questions(course_filter, static_filter, qtype_filter, topic_filter, search_text):
     if not QUESTIONS:
