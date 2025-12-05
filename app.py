@@ -52,32 +52,40 @@ def get_label_topic(q):
 
 
 def question_matches_filters(q, course_filter, static_filter, qtype_filter, topic_filter, search_text):
-    # Courses
+    # ----- Courses -----
+    # If course_filter is empty → no restriction.
     q_courses = q.get("courses", [])
-    if course_filter and not any(c in course_filter for c in q_courses):
-        return False
+    if course_filter:
+        if not set(q_courses) & set(course_filter):
+            return False
 
-    # Static / Non-static
-    is_static = q.get("static", True)
-    if "Static" not in static_filter and is_static:
-        return False
-    if "Non-static" not in static_filter and not is_static:
-        return False
+    # ----- Static / Non-static -----
+    # If static_filter is empty → no restriction.
+    if static_filter:
+        is_static = q.get("static", True)
+        if is_static and "Static" not in static_filter:
+            return False
+        if (not is_static) and "Non-static" not in static_filter:
+            return False
 
-    # Question types
+    # ----- Question types -----
     q_qtypes = q.get("qtypes", [])
-    if qtype_filter and not any(t in qtype_filter for t in q_qtypes):
-        return False
+    if qtype_filter:
+        if not set(q_qtypes) & set(qtype_filter):
+            return False
 
-    # Topics – only filter if some topics are selected
+    # ----- Topics (filter) -----
     q_topics = get_question_topics(q)
-    if topic_filter and not any(t in topic_filter for t in q_topics):
-        return False
+    if topic_filter:
+        if not set(q_topics) & set(topic_filter):
+            return False
 
-    # Search text – look in base text, variants, topics, id, etc.
+    # ----- Search text -----
+    # If search is empty → no restriction.
     if search_text.strip():
         s = search_text.lower()
 
+        # Base text, topics, types, courses, id
         text_parts = [
             q.get("text", ""),
             " ".join(q_topics),
@@ -86,6 +94,7 @@ def question_matches_filters(q, course_filter, static_filter, qtype_filter, topi
             q.get("id", ""),
         ]
 
+        # Include all variant texts (for algorithmic questions)
         variants = q.get("variants", [])
         if isinstance(variants, list):
             for v in variants:
