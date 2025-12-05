@@ -74,14 +74,22 @@ def question_matches_filters(q, course_filter, static_filter, qtype_filter, topi
     if topic_filter and not any(t in topic_filter for t in q_topics):
         return False
 
-    # Search text
+    # Search text – look in base text AND all variant texts
     if search_text.strip():
         s = search_text.lower()
-        if s not in q.get("text", "").lower():
+
+        text_parts = [q.get("text", "")]
+
+        variants = q.get("variants", [])
+        if isinstance(variants, list):
+            for v in variants:
+                text_parts.append(v.get("text", ""))
+
+        haystack = " ".join(text_parts).lower()
+        if s not in haystack:
             return False
 
     return True
-
 
 def filtered_questions(course_filter, static_filter, qtype_filter, topic_filter, search_text):
     if not QUESTIONS:
