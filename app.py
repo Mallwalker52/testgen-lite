@@ -223,24 +223,27 @@ all_courses = sorted({c for q in QUESTIONS for c in q.get("courses", [])})
 course_filter = st.sidebar.multiselect(
     "Course",
     options=all_courses,
-    default=all_courses if all_courses else [],
+    default=[],   # nothing selected
 )
+
 
 # Static / Non-static
 static_options = ["Static", "Non-static"]
 static_filter = st.sidebar.multiselect(
     "Static / Non-static",
     options=static_options,
-    default=static_options,
+    default=[],   # nothing selected
 )
+
 
 # Question types
 all_qtypes = sorted({qt for q in QUESTIONS for qt in q.get("qtypes", [])})
 qtype_filter = st.sidebar.multiselect(
     "Question type",
     options=all_qtypes,
-    default=all_qtypes if all_qtypes else [],
+    default=[],   # nothing selected
 )
+
 
 # Topics – unselected by default
 all_topics = sorted({t for q in QUESTIONS for t in get_question_topics(q)})
