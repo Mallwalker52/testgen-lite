@@ -75,18 +75,20 @@
   "text_template": "Let $\\mathbf{F}(x,y)=\\langle -x, y \\rangle$. Compute the circulation $\\displaystyle \\oint_C \\mathbf{F}\\cdot d\\mathbf{r}$ around the curve $\\mathbf{r}(t)=\\langle {n1}\\cos t,\\ -{n1}\\sin t \\rangle$, $0\\le t\\le 2\\pi$.",
   "solution_template": "The curve $C$ is the circle of radius ${n1}$ traced clockwise, and $\\mathbf{F}(x,y)=\\langle -x,y\\rangle$. Compute the scalar curl:\n$$\\frac{\\partial}{\\partial x}(y) - \\frac{\\partial}{\\partial y}(-x) = 0 - 0 = 0.$$ Since the curl is zero everywhere, $\\mathbf{F}$ is conservative on $\\mathbb{R}^2$. For a conservative field, the circulation around any closed curve is zero, so\n$$\\oint_C \\mathbf{F}\\cdot d\\mathbf{r} = 0.$$"
 },
-{
-  "id": "M2760_CONSERVATIVE_N1",
-  "courses": ["Math 2760"],
-  "static": false,
-  "qtypes": ["Open-ended", "Algorithmic", "Conceptual"],
-  "topics": ["Conservative fields", "Potential functions", "Line integrals"],
-  "params": {
-    "n1": { "min": 3, "max": 8 }
+  {
+    "id": "M2760_CONSERVATIVE_N1",
+    "courses": ["Math 2760"],
+    "static": false,
+    "qtypes": ["Open-ended", "Algorithmic", "Conceptual"],
+    "topics": ["Conservative fields", "Potential functions", "Line integrals"],
+    "params": {
+      "n1": { "min": 3, "max": 8 }
+    },
+    "text_template": "Consider the vector field $\\\\mathbf{F}(x,y)=\\\\langle \\\\ln(y)+2xy^3,\\\\ x/y+3x^2 y^2 \\\\rangle$.\n\nA. Verify that $\\\\mathbf{F}$ is conservative.\n\nB. Find a potential function $f(x,y)$ such that $\\\\nabla f = \\\\mathbf{F}$.\n\nC. Evaluate the line integral $\\\\displaystyle \\\\int_C \\\\mathbf{F}\\\\cdot d\\\\mathbf{r}$ along the curve $\\\\mathbf{r}(t)=\\\\langle t-{n1},\\\\ t \\\\rangle$ for $1\\\\le t\\\\le 2$ using the Fundamental Theorem for Line Integrals.",
+    "solution_template": "Write the field as $\\\\mathbf F(x,y)=\\\\langle P(x,y),Q(x,y)\\\\rangle$ with\n$$P(x,y)=\\\\ln(y)+2xy^3, \\\\qquad Q(x,y)=x/y+3x^2y^2.$$ \nCompute partial derivatives:\n$$P_y = 1/y + 6xy^2, \\\\qquad Q_x = 1/y + 6xy^2.$$ \nSince $P_y = Q_x$ on $y>0$, the field is conservative.\n\nTo find a potential $f$, integrate $P$ with respect to $x$:\n$$f(x,y)=\\\\int (\\\\ln y + 2xy^3)\\\\,dx = x\\\\ln y + x^2y^3 + g(y).$$\nDifferentiate with respect to $y$:\n$$f_y = x/y + 3x^2y^2 + g'(y).$$\nSet equal to $Q$:\n$$x/y + 3x^2y^2 + g'(y) = x/y + 3x^2y^2,$$\nso $g'(y)=0$. A potential is therefore\n$$f(x,y)=x\\\\ln y + x^2y^3.$$\n\nFor $\\\\mathbf r(t)=\\\\langle t-{n1},\,t\\\\rangle$, the Fundamental Theorem gives\n$$\\\\int_C \\\\mathbf F\\\\cdot d\\\\mathbf r = f(\\\\mathbf r(2)) - f(\\\\mathbf r(1)).$$"
   },
-  "text_template": "Consider the vector field $\\mathbf{F}(x,y)=\\langle \\ln(y)+2xy^3,\\ x/y+3x^2 y^2 \\rangle$.\n\nA. Verify that $\\mathbf{F}$ is conservative.\n\nB. Find a potential function $f(x,y)$ such that $\\nabla f = \\mathbf{F}$.\n\nC. Evaluate the line integral $\\displaystyle \\int_C \\mathbf{F}\\cdot d\\mathbf{r}$ along the curve $\\mathbf{r}(t)=\\langle t-{n1},\\ t \\rangle$ for $1\\le t\\le 2$ using the Fundamental Theorem for Line Integrals.",
-  "solution_template": "Write $\\mathbf{F}(x,y)=\\langle P(x,y),Q(x,y)\\rangle$ with\n$$P(x,y)=\\ln(y)+2xy^3, \\qquad Q(x,y)=x/y+3x^2y^2.$$ Then\n$$P_y = \\frac{\\partial P}{\\partial y} = 1/y + 6xy^2, \\qquad Q_x = \\frac{\\partial Q}{\\partial x} = 1/y + 6xy^2.$$ Since $P_y = Q_x$ on $y>0$, the field is conservative there.\n\nTo find a potential, integrate $P$ with respect to $x$:\n$$f(x,y)=\\int (\\ln y + 2xy^3)\\,dx = x\\ln y + x^2y^3 + g(y),$$ where $g$ depends only on $y$. Differentiate with respect to $y$:\n$$f_y(x,y) = x/y + 3x^2y^2 + g'(y).$$ Set this equal to $Q(x,y)$:\n$$x/y + 3x^2y^2 + g'(y) = x/y + 3x^2y^2,$$ so $g'(y)=0$ and we may take\n$$f(x,y)=x\\ln y + x^2y^3$$ as a potential function.\n\nFor the line integral along $\\mathbf{r}(t)=\\langle t-{n1}, t \\rangle$ with $1\\le t\\le 2$, use the Fundamental Theorem for Line Integrals:\n$$\\int_C \\mathbf{F}\\cdot d\\mathbf{r} = f(\\mathbf{r}(2)) - f(\\mathbf{r}(1)).$$ Here\n$$\\mathbf{r}(t) = (t-{n1}, t),$$ so compute $f(t-{n1},t)$ at $t=2$ and $t=1$ and subtract to obtain the value of the line integral."
-},   {
+
+  {
     "id": "M2760_CYL_CART_SURFACE",
     "courses": ["Math 2760"],
     "static": true,
@@ -95,8 +97,8 @@
     "params": {
       "n1": { "min": 1, "max": 9 }
     },
-    "text_template": "Consider the equation $$r = {n1} \\cos(\\theta)$$ in cylindrical coordinates.\nA. Convert the equation from cylindrical to Cartesian coordinates.\nB. Identify the surface.",
-    "solution_template": "In cylindrical coordinates we have x = r cos(theta), y = r sin(theta), and r^2 = x^2 + y^2.\nStarting from r = {n1} cos(theta), multiply both sides by r to get\nr^2 = {n1} r cos(theta).\nSince r cos(theta) = x and r^2 = x^2 + y^2, this becomes\nx^2 + y^2 = {n1} x.\nRewriting,\nx^2 - {n1} x + y^2 = 0.\nComplete the square in x:\n(x - {n1}/2)^2 + y^2 = ({n1}/2)^2.\nThis is a circle in the xy-plane with center ( {n1}/2, 0 ) and radius {n1}/2.\nIn three dimensions, this circle extends in the z-direction, so the surface is a circular cylinder of radius {n1}/2 centered along the line x = {n1}/2, y = 0 (axis parallel to the z-axis)."
+    "text_template": "Consider the equation $$r = {n1} \\\\cos(\\\\theta)$$ in cylindrical coordinates.\nA. Convert the equation from cylindrical to Cartesian coordinates.\nB. Identify the surface.",
+    "solution_template": "In cylindrical coordinates, $x=r\\\\cos(\\\\theta)$ and $y=r\\\\sin(\\\\theta)$ with $r^2=x^2+y^2$.\nStart from\n$$r = {n1}\\\\cos(\\\\theta).$$\nMultiply both sides by $r$:\n$$r^2 = {n1}r\\\\cos(\\\\theta).$$\nUse $r\\\\cos(\\\\theta)=x$:\n$$x^2 + y^2 = {n1}x.$$ \nComplete the square:\n$$(x - {n1}/2)^2 + y^2 = ({n1}/2)^2.$$\nThis describes a circular cylinder of radius ${n1}/2$ whose axis is the line $x={n1}/2$, parallel to the $z$-axis."
   },
 
   {
@@ -108,8 +110,8 @@
     "params": {
       "n1": { "min": 1, "max": 9 }
     },
-    "text_template": "Consider the equation $$\\rho = {n1}\\sin(\\phi)$$ in spherical coordinates.\nA. Convert the equation from spherical to Cartesian coordinates.\nB. Identify the surface.",
-    "solution_template": "Use spherical coordinates with rho >= 0, 0 <= phi <= pi, 0 <= theta < 2pi, and the relations\nx = rho sin(phi) cos(theta), y = rho sin(phi) sin(theta), z = rho cos(phi).\nLet r = sqrt(x^2 + y^2). Then r = rho sin(phi) and z = rho cos(phi), and we also have r^2 + z^2 = rho^2.\nStarting from rho = {n1} sin(phi), substitute sin(phi) = r / rho to get\nrho = {n1} r / rho.\nThus\nrho^2 = {n1} r.\nUsing rho^2 = r^2 + z^2, we obtain\nr^2 + z^2 = {n1} r,\nor\nr^2 - {n1} r + z^2 = 0.\nComplete the square in r:\n(r - {n1}/2)^2 + z^2 = ({n1}/2)^2.\nIn cylindrical coordinates (r, theta, z) this is a circle of radius {n1}/2 centered at r = {n1}/2, z = 0 in the r z-plane.\nReplacing r by sqrt(x^2 + y^2) gives the Cartesian form\n(sqrt(x^2 + y^2) - {n1}/2)^2 + z^2 = ({n1}/2)^2.\nThis describes a torus (a horn torus) obtained by revolving the circle (r - {n1}/2)^2 + z^2 = ({n1}/2)^2 about the z-axis."
+    "text_template": "Consider the equation $$\\\\rho = {n1}\\\\sin(\\\\phi)$$ in spherical coordinates.\nA. Convert the equation from spherical to Cartesian coordinates.\nB. Identify the surface.",
+    "solution_template": "Use $r=\\\\sqrt{x^2+y^2}$ and $\\\\rho^2=r^2+z^2$.\nStart from\n$$\\\\rho = {n1}\\\\sin(\\\\phi).$$\nSince $\\\\sin(\\\\phi)=r/\\\\rho$, we obtain\n$$\\\\rho = {n1}r/\\\\rho \\\\implies \\\\rho^2={n1}r.$$ \nSubstitute $\\\\rho^2=r^2+z^2$:\n$$r^2 + z^2 = {n1}r.$$ \nComplete the square:\n$$(r - {n1}/2)^2 + z^2 = ({n1}/2)^2.$$ \nReplacing $r$ with $\\\\sqrt{x^2+y^2}$ gives the Cartesian equation\n$$(\\\\sqrt{x^2+y^2}-{n1}/2)^2 + z^2 = ({n1}/2)^2.$$\nThis is a horn torus formed by revolving the circle in the $rz$-plane about the $z$-axis."
   },
 
   {
@@ -121,8 +123,8 @@
     "params": {
       "n1": { "min": 1, "max": 9 }
     },
-    "text_template": "Consider the integral\n$$\\int_0^2 \\int_0^x \\int_0^{x+y} f(x,y,z)\\,dz\\,dy\\,dx.$$\nA. Sketch the projection of the region onto the $xy$-plane.\nB. Rewrite the integral in the order $dx\\,dy\\,dz$.\nC. Evaluate the integral if $$f(x,y,z)=x + 2y + 3z + {n1}.$$",
-    "solution_template": "The region E is described by\n0 <= x <= 2,\n0 <= y <= x,\n0 <= z <= x + y.\n\nPart A: Projection onto the xy-plane.\nIgnoring z, the inequalities become\n0 <= x <= 2,\n0 <= y <= x.\nThis is the triangular region in the xy-plane bounded by y = 0, y = x, and x = 2.\n\nPart B: Rewrite in the order dx dy dz.\nWe must describe the same region E using bounds for x first, then y, then z.\nFrom the original description, one can show that:\nThe z-values in the region range from 0 to 4.\nFor 0 <= z <= 2, the allowed y-values range from 0 to 2.\nFor 2 <= z <= 4, the allowed y-values range from z - 2 to 2.\nFor each fixed z and y, x must satisfy y <= x <= 2 and z <= x + y, which gives x between max(y, z - y) and 2.\nThis leads to a piecewise description. One valid way to write the integral in the order dx dy dz is as a sum of four integrals:\n\nFor 0 <= z <= 2 and 0 <= y <= z/2, we have z - y <= x <= 2.\nFor 0 <= z <= 2 and z/2 <= y <= 2, we have y <= x <= 2.\nFor 2 <= z <= 4 and z - 2 <= y <= z/2, we have z - y <= x <= 2.\nFor 2 <= z <= 4 and z/2 <= y <= 2, we have y <= x <= 2.\n\nThus, one possible rewrite in the order dx dy dz is:\nIntegral over z from 0 to 2, y from 0 to z/2, x from z - y to 2,\nplus integral over z from 0 to 2, y from z/2 to 2, x from y to 2,\nplus integral over z from 2 to 4, y from z - 2 to z/2, x from z - y to 2,\nplus integral over z from 2 to 4, y from z/2 to 2, x from y to 2,\nwith the integrand f(x,y,z).\n\nPart C: Evaluate the integral with f(x,y,z) = x + 2y + 3z + {n1}.\nIt is easiest to evaluate the original integral:\nI = ∫(x=0 to 2) ∫(y=0 to x) ∫(z=0 to x + y) (x + 2y + 3z + {n1}) dz dy dx.\nFirst integrate with respect to z:\n∫(z=0 to x + y) (x + 2y + 3z + {n1}) dz\n= (x + 2y + {n1})(x + y) + (3/2)(x + y)^2.\nThen integrate that result with respect to y from 0 to x, and finally integrate with respect to x from 0 to 2.\nCarrying out these computations (for example, symbolically or by careful algebra) gives\nI = 4 {n1} + 80/3.\nSo the value of the integral is 4 {n1} + 80/3."
+    "text_template": "Consider the integral\n$$\\\\int_0^2 \\\\int_0^x \\\\int_0^{x+y} f(x,y,z)\\\\,dz\\\\,dy\\\\,dx.$$\nA. Sketch the projection of the region onto the $xy$-plane.\nB. Rewrite the integral in the order $dx\\\\,dy\\\\,dz$.\nC. Evaluate the integral if $$f(x,y,z)=x + 2y + 3z + {n1}.$$",
+    "solution_template": "The region is\n$$0 \\\\le x \\\\le 2, \\\\qquad 0 \\\\le y \\\\le x, \\\\qquad 0 \\\\le z \\\\le x+y.$$ \nProjection onto the $xy$-plane is the triangle bounded by $y=0$, $y=x$, and $x=2$.\n\nFor part C, evaluate directly:\n$$I = \\\\int_0^2 \\\\int_0^x \\\\int_0^{x+y} (x + 2y + 3z + {n1})\\\\,dz\,dy\,dx.$$ \nIntegrate in $z$:\n$$\\\\int_0^{x+y}(x+2y+3z+{n1})dz = (x+2y+{n1})(x+y) + \\\\tfrac32(x+y)^2.$$ \nIntegrate in $y$ and then $x$ to obtain\n$$I = 4{n1} + \\\\frac{80}{3}.$$"
   },
 
   {
@@ -134,8 +136,8 @@
     "params": {
       "n1": { "min": 1, "max": 9 }
     },
-    "text_template": "Evaluate the integral\n$$\\iiint_E (x^2 + y^2 + z^2 + {n1})\\,dV,$$\nwhere the region $E$ is described by\n$$0 \\le \\rho \\le 2, \\quad 0 \\le \\phi \\le \\frac{\\pi}{3}, \\quad 0 \\le \\theta \\le \\pi.$$",
-    "solution_template": "In spherical coordinates we have x^2 + y^2 + z^2 = rho^2, and the volume element is dV = rho^2 sin(phi) d rho d phi d theta.\nThus the integrand x^2 + y^2 + z^2 + {n1} becomes rho^2 + {n1}, and the integrand times the Jacobian is\n(rho^2 + {n1}) rho^2 sin(phi) = (rho^4 + {n1} rho^2) sin(phi).\nThe integral becomes\n∫(theta=0 to pi) ∫(phi=0 to pi/3) ∫(rho=0 to 2) (rho^4 + {n1} rho^2) sin(phi) d rho d phi d theta.\nFirst integrate with respect to rho:\n∫(rho=0 to 2) (rho^4 + {n1} rho^2) d rho\n= [rho^5 / 5 + {n1} rho^3 / 3] from 0 to 2\n= 32/5 + 8 {n1} / 3.\nNext integrate with respect to phi:\n∫(phi=0 to pi/3) sin(phi) d phi = 1/2.\nFinally integrate with respect to theta:\n∫(theta=0 to pi) d theta = pi.\nMultiplying these factors, the value of the integral is\nI = (32/5 + 8 {n1} / 3) * (1/2) * pi = pi (16/5 + 4 {n1} / 3)."
+    "text_template": "Evaluate the integral\n$$\\\\iiint_E (x^2 + y^2 + z^2 + {n1})\\\\,dV,$$\nwhere the region $E$ is described by\n$$0 \\\\le \\\\rho \\\\le 2, \\\\quad 0 \\\\le \\\\phi \\\\le \\\\frac{\\\\pi}{3}, \\\\quad 0 \\\\le \\\\theta \\\\le \\\\pi.$$",
+    "solution_template": "Since $x^2+y^2+z^2=\\\\rho^2$ and $dV=\\\\rho^2\\\\sin(\\\\phi)d\\\\rho d\\\\phi d\\\\theta$, the integrand becomes\n$$(\\\\rho^2+{n1})\\\\rho^2\\\\sin(\\\\phi).$$\nIntegrate in $\\\\rho$:\n$$\\\\int_0^2 (\\\\rho^4 + {n1}\\\\rho^2)d\\\\rho = \\\\frac{32}{5}+\\\\frac{8{n1}}{3}.$$ \nIntegrate in $\\\\phi$:\n$$\\\\int_0^{\\\\pi/3} \\\\sin(\\\\phi)d\\\\phi = \\\\tfrac12.$$ \nIntegrate in $\\\\theta$:\n$$\\\\int_0^{\\\\pi} d\\\\theta = \\\\pi.$$ \nThus\n$$I = \\\\pi\\\\left(\\\\frac{16}{5} + \\\\frac{4{n1}}{3}\\\\right).$$"
   },
 
 {
@@ -147,8 +149,8 @@
   "params": {
     "n1": { "min": 1, "max": 9 }
   },
-  "text_template": "Let $C$ be the curve $$\\\\mathbf r(t)=\\\\langle t, t^2, t^3 \\\\rangle, \\\\quad 0 \\\\le t \\\\le 1.$$ Evaluate the line integral\n$$\\\\int_C (x + y + z + {n1})\\\\,ds,$$\nusing the definition\n$$\\\\int_C f(x,y,z)\\\\,ds = \\\\int_0^1 f(\\\\mathbf r(t)) \\\\, \\\\|\\\\mathbf r'(t)\\\\|\\\\,dt.$$",
-  "solution_template": "The curve is r(t) = (t, t^2, t^3) for 0 <= t <= 1.\nFirst compute r'(t):\nr'(t) = (1, 2t, 3t^2).\nThen the speed is\n||r'(t)|| = sqrt(1 + 4 t^2 + 9 t^4).\nThe scalar field along the curve is\nf(r(t)) = t + t^2 + t^3 + {n1}.\nBy the definition of the line integral with respect to arc length,\n\\\\int_C (x + y + z + {n1}) ds = \\\\int_0^1 (t + t^2 + t^3 + {n1}) \\\\sqrt{1 + 4 t^2 + 9 t^4} \\\\, dt.\nThis integral does not have a simple elementary antiderivative, so the exact value is given by this single-variable integral expression.\nFor purposes of setup, the correct evaluation using the definition is\n\\\\int_0^1 (t + t^2 + t^3 + {n1}) \\\\sqrt{1 + 4 t^2 + 9 t^4} \\\\, dt."
+  "text_template": "Let $C$ be the curve\n$$\\mathbf r(t)=\\langle t, t^2, t^3 \\rangle, \\quad 0 \\le t \\le 1.$$ \nEvaluate the line integral\n$$\\int_C (x + y + z + {n1})\\,ds,$$\nusing the definition\n$$\\int_C f(x,y,z)\\,ds = \\int_0^1 f(\\mathbf r(t))\\,\\|\\mathbf r'(t)\\|\\,dt.$$",
+  "solution_template": "Compute\n$$\\mathbf r'(t)=\\langle 1, 2t, 3t^2 \\rangle,$$\nso\n$$\\|\\mathbf r'(t)\\| = \\sqrt{1 + 4t^2 + 9t^4}.$$ \nAlong the curve,\n$$f(\\mathbf r(t)) = t + t^2 + t^3 + {n1}.$$ \nThus the line integral becomes\n$$\\int_0^1 (t + t^2 + t^3 + {n1})\\sqrt{1 + 4t^2 + 9t^4}\\,dt.$$ \nThis integral does not have an elementary antiderivative, so this expression is the evaluated form using the definition of the line integral with respect to arc length."
 }
 
 ]
