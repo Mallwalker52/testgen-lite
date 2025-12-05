@@ -266,7 +266,7 @@ topic_filter = st.sidebar.multiselect(
 if "search_generation" not in st.session_state:
     st.session_state["search_generation"] = 0
 
-## Generate a unique key for the search box each time search is cleared
+# Key for the current generation of the search box
 search_key = f"search_text_input_{st.session_state['search_generation']}"
 
 # --- Search box ---
@@ -277,9 +277,10 @@ search_text = st.sidebar.text_input(
 
 # --- Clear search button BELOW the box ---
 if st.sidebar.button("Clear search"):
+    # Just bump the generation; next run will use a new key
     st.session_state["search_generation"] += 1
-    st.session_state[search_key] = ""
-    st.experimental_rerun()
+    st.rerun()
+
 
 
 
