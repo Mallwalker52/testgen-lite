@@ -4,9 +4,10 @@ from pathlib import Path
 
 import streamlit as st
 
+# Use a cryptographically secure RNG so variants really vary
+secure_random = random.SystemRandom()
+
 # ---------- Load question bank ----------
-
-
 def load_questions(path: Path):
     if not path.exists():
         st.error(f"questions.json not found at: {path}")
@@ -15,9 +16,7 @@ def load_questions(path: Path):
         with path.open("r", encoding="utf-8") as f:
             data = json.load(f)
             if not isinstance(data, list):
-                st.error(
-                    "questions.json must contain a list of questions (a JSON array)."
-                )
+                st.error("questions.json must contain a list of questions (a JSON array).")
                 return []
             return data
     except Exception as e:
@@ -36,9 +35,7 @@ if "instances" not in st.session_state:
 instances = st.session_state["instances"]
 
 
-# ---------- Helpers for topics / labels ----------
-
-
+# ---------- Helpers ----------
 def get_question_topics(q):
     """Return a list of topic strings for a question."""
     if "topics" in q and isinstance(q["topics"], list):
@@ -48,60 +45,15 @@ def get_question_topics(q):
 
 
 def get_label_topic(q):
-    """For display in lists: prefer single topic, fall back to 'Untitled'."""
+    """Single label string for question lists."""
     if "topic" in q and q["topic"]:
         return q["topic"]
     topics = get_question_topics(q)
     return topics[0] if topics else "Untitled"
 
 
-# ---------- Sidebar filters ----------
-
-st.sidebar.title("TestGen Lite (Web)")
-
-if not QUESTIONS:
-    st.sidebar.write("Add a valid questions.json file and refresh.")
-else:
-    # Courses
-    all_courses = sorted({c for q in QUESTIONS for c in q.get("courses", [])})
-    course_filter = st.sidebar.multiselect(
-        "Course",
-        options=all_courses,
-        default=all_courses if all_courses else [],
-    )
-
-    # Static / Non-static
-    static_options = ["Static", "Non-static"]
-    static_filter = st.sidebar.multiselect(
-        "Static / Non-static",
-        options=static_options,
-        default=static_options,
-    )
-
-    # Question types
-    all_qtypes = sorted({qt for q in QUESTIONS for qt in q.get("qtypes", [])})
-    qtype_filter = st.sidebar.multiselect(
-        "Question type",
-        options=all_qtypes,
-        default=all_qtypes if all_qtypes else [],
-    )
-
-    # Topics – unselected by default; if empty, we do NOT filter by topic
-    all_topics = sorted({t for q in QUESTIONS for t in get_question_topics(q)})
-    topic_filter = st.sidebar.multiselect(
-        "Topics",
-        options=all_topics,
-        default=[],  # nothing selected initially
-    )
-
-    # Text search
-    search_text = st.sidebar.text_input("Search in question text", value="")
-
-
-# ---------- Filtering logic ----------
-
-
-def question_matches_filters(q):
+def question_matches_filters(q, course_filter, static_filter,
+                             qtype_filter, topic_filter, search_text):
     # Courses
     q_courses = q.get("courses", [])
     if course_filter and not any(c in course_filter for c in q_courses):
@@ -119,7 +71,7 @@ def question_matches_filters(q):
     if qtype_filter and not any(t in qtype_filter for t in q_qtypes):
         return False
 
-    # Topics – only filter if user selected something
+    # Topics – if topic_filter empty, don't filter by topic
     q_topics = get_question_topics(q)
     if topic_filter and not any(t in topic_filter for t in q_topics):
         return False
@@ -128,26 +80,32 @@ def question_matches_filters(q):
     if search_text.strip():
         s = search_text.lower()
         if s not in q.get("text", "").lower():
-            return False
+            # If no top-level text (algorithmic only), also search in variants
+            variants = q.get("variants", [])
+            if not any(s in v.get("text", "").lower() for v in variants):
+                return False
 
     return True
 
 
-def filtered_questions():
+def filtered_questions(course_filter, static_filter,
+                       qtype_filter, topic_filter, search_text):
     if not QUESTIONS:
         return []
-    return [q for q in QUESTIONS if question_matches_filters(q)]
+    return [
+        q for q in QUESTIONS
+        if question_matches_filters(
+            q, course_filter, static_filter, qtype_filter, topic_filter, search_text
+        )
+    ]
 
 
-# ---------- Manipulating instances ----------
-
-
-def add_to_test(ids_to_add):
-    """Add one instance per qid, allowing duplicates.
-
+def add_instances(qids):
+    """
+    Add one instance per qid, allowing duplicates.
     For non-static questions with variants, pick a variant each time.
     """
-    for qid in ids_to_add:
+    for qid in qids:
         q = Q_BY_ID.get(qid)
         if not q:
             continue
@@ -155,27 +113,64 @@ def add_to_test(ids_to_add):
         variant_idx = None
         if not q.get("static", True) and "variants" in q:
             variants = q.get("variants", [])
-            if isinstance(variants, list) and variants:
-                variant_idx = random.randrange(len(variants))
+            if isinstance(variants, list) and len(variants) > 0:
+                variant_idx = secure_random.randrange(len(variants))
 
         instances.append({"qid": qid, "variant": variant_idx})
 
 
-def move_up(index: int):
+def add_single_instance(qid):
+    """Convenience wrapper to add one instance from preview."""
+    add_instances([qid])
+
+
+def move_up(index):
     if index <= 0 or index >= len(instances):
         return
     instances[index - 1], instances[index] = instances[index], instances[index - 1]
 
 
-def move_down(index: int):
+def move_down(index):
     if index < 0 or index >= len(instances) - 1:
         return
     instances[index + 1], instances[index] = instances[index], instances[index + 1]
 
 
-def remove_from_test(index: int):
+def remove_instance(index):
     if 0 <= index < len(instances):
         instances.pop(index)
+
+
+def regenerate_variant(index):
+    """Pick a new variant for a non-static question at this index."""
+    if index < 0 or index >= len(instances):
+        return
+    inst_obj = instances[index]
+    qid = inst_obj["qid"]
+    base = Q_BY_ID.get(qid)
+    if not base:
+        return
+
+    if base.get("static", True):
+        # nothing to do for static questions
+        return
+
+    variants = base.get("variants", [])
+    if not isinstance(variants, list) or len(variants) == 0:
+        return
+
+    current_idx = inst_obj.get("variant", None)
+
+    # Choose a different variant if possible
+    if len(variants) == 1:
+        new_idx = 0
+    else:
+        choices = list(range(len(variants)))
+        if current_idx is not None and current_idx in choices:
+            choices.remove(current_idx)
+        new_idx = secure_random.choice(choices)
+
+    inst_obj["variant"] = new_idx
 
 
 def get_instance_question(inst_obj):
@@ -188,8 +183,8 @@ def get_instance_question(inst_obj):
     variant_idx = inst_obj.get("variant", None)
     variants = base.get("variants", [])
 
-    # Static or no variants: just use base
     if variant_idx is None or base.get("static", True) or not variants:
+        # Static or no variants: just use base
         return base
 
     # Use chosen variant, overriding text/solution
@@ -198,9 +193,6 @@ def get_instance_question(inst_obj):
     q["text"] = variant.get("text", base.get("text", ""))
     q["solution"] = variant.get("solution", base.get("solution", ""))
     return q
-
-
-# ---------- Markdown exports ----------
 
 
 def make_test_markdown():
@@ -227,26 +219,71 @@ def make_key_markdown():
     return "\n".join(lines)
 
 
-# ---------- Main layout ----------
-
+# ---------- UI ----------
 st.title("TestGen Lite – Question Picker + Answer Key")
 
 if not QUESTIONS:
     st.stop()
 
+# ----- Sidebar filters -----
+st.sidebar.title("Filters")
+
+# Courses
+all_courses = sorted({c for q in QUESTIONS for c in q.get("courses", [])})
+course_filter = st.sidebar.multiselect(
+    "Course",
+    options=all_courses,
+    default=all_courses if all_courses else [],
+)
+
+# Static / Non-static
+static_options = ["Static", "Non-static"]
+static_filter = st.sidebar.multiselect(
+    "Static / Non-static",
+    options=static_options,
+    default=static_options,
+)
+
+# Question types
+all_qtypes = sorted({qt for q in QUESTIONS for qt in q.get("qtypes", [])})
+qtype_filter = st.sidebar.multiselect(
+    "Question type",
+    options=all_qtypes,
+    default=all_qtypes if all_qtypes else [],
+)
+
+# Topics – unselected by default
+all_topics = sorted({t for q in QUESTIONS for t in get_question_topics(q)})
+topic_filter = st.sidebar.multiselect(
+    "Topics",
+    options=all_topics,
+    default=[],
+)
+
+# Text search
+search_text = st.sidebar.text_input("Search in question/variants", value="")
+
+# ----- Main layout -----
 col_bank, col_test = st.columns(2)
 
-# ----- Left column: question bank -----
+# ----- Left: Question bank -----
 with col_bank:
     st.subheader("Question Bank")
 
-    bank_qs = filtered_questions()
+    bank_qs = filtered_questions(
+        course_filter, static_filter, qtype_filter, topic_filter, search_text
+    )
+
     if not bank_qs:
         st.write("No questions match the current filter.")
     else:
-        options = [f"{q['id']} – {get_label_topic(q)}" for q in bank_qs]
+        options = [
+            f"{q['id']} – {get_label_topic(q)}"
+            for q in bank_qs
+        ]
         id_by_label = {
-            f"{q['id']} – {get_label_topic(q)}": q["id"] for q in bank_qs
+            f"{q['id']} – {get_label_topic(q)}": q["id"]
+            for q in bank_qs
         }
 
         selected_labels = st.multiselect(
@@ -256,11 +293,10 @@ with col_bank:
         )
 
         if st.button("Add selected to test"):
-            ids_to_add = [id_by_label[label] for label in selected_labels]
-            add_to_test(ids_to_add)
-            st.rerun()
+            qids_to_add = [id_by_label[label] for label in selected_labels]
+            add_instances(qids_to_add)
 
-        # Preview panel
+        # Preview area
         with st.expander("Preview from bank"):
             preview_label = st.selectbox(
                 "Choose a question to preview",
@@ -270,20 +306,15 @@ with col_bank:
             if preview_label != "(none)":
                 qid = id_by_label[preview_label]
                 base = Q_BY_ID.get(qid)
+
                 if base:
                     is_static = base.get("static", True)
                     variants = base.get("variants", [])
 
                     st.markdown(f"**ID:** {base['id']}")
-                    st.markdown(
-                        f"**Courses:** {', '.join(base.get('courses', [])) or '—'}"
-                    )
-                    st.markdown(
-                        f"**Types:** {', '.join(base.get('qtypes', [])) or '—'}"
-                    )
-                    st.markdown(
-                        f"**Topics:** {', '.join(get_question_topics(base)) or '—'}"
-                    )
+                    st.markdown(f"**Courses:** {', '.join(base.get('courses', [])) or '—'}")
+                    st.markdown(f"**Types:** {', '.join(base.get('qtypes', [])) or '—'}")
+                    st.markdown(f"**Topics:** {', '.join(get_question_topics(base)) or '—'}")
                     st.markdown(
                         f"**Static / Non-static:** "
                         f"{'Static' if is_static else 'Non-static (algorithmic)'}"
@@ -307,36 +338,55 @@ with col_bank:
                         else:
                             st.write("No text or variants defined for this question.")
 
-# ----- Right column: current test -----
+                    # Button to add this single question instance directly
+                    if st.button("Add this question to test", key=f"preview_add_{qid}"):
+                        add_single_instance(qid)
+                        st.experimental_rerun()
+
+# ----- Right: Current test -----
 with col_test:
     st.subheader("Current Test")
 
     if not instances:
         st.write("No questions selected yet.")
     else:
-        for idx, inst_obj in enumerate(instances, start=0):
+        for idx, inst_obj in enumerate(instances):
             inst_q = get_instance_question(inst_obj)
             if not inst_q:
                 continue
 
             with st.container():
                 label_topic = get_label_topic(inst_q)
+                is_static = inst_q.get("static", True)
+
+                # Number by position in test: 1., 2., 3., ...
                 st.markdown(f"**{idx + 1}. {label_topic}**")
+                st.caption(
+                    f"ID: {inst_q.get('id', '—')} • "
+                    f"{'Static' if is_static else 'Non-static (algorithmic)'}"
+                )
                 st.markdown(inst_q.get("text", ""))
 
-                bcol1, bcol2, bcol3 = st.columns(3)
+                bcol1, bcol2, bcol3, bcol4 = st.columns(4)
                 with bcol1:
                     if st.button("⬆️ Up", key=f"up_{idx}"):
                         move_up(idx)
-                        st.rerun()
+                        st.experimental_rerun()
                 with bcol2:
                     if st.button("⬇️ Down", key=f"down_{idx}"):
                         move_down(idx)
-                        st.rerun()
+                        st.experimental_rerun()
                 with bcol3:
                     if st.button("🗑 Remove", key=f"remove_{idx}"):
-                        remove_from_test(idx)
-                        st.rerun()
+                        remove_instance(idx)
+                        st.experimental_rerun()
+                with bcol4:
+                    # Only show regenerate button for non-static questions with variants
+                    base = Q_BY_ID.get(inst_obj["qid"])
+                    if base and (not base.get("static", True)) and base.get("variants"):
+                        if st.button("🔄 Regenerate", key=f"regen_{idx}"):
+                            regenerate_variant(idx)
+                            st.experimental_rerun()
 
     st.markdown("---")
     st.subheader("Export")
