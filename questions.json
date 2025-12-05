@@ -53,7 +53,40 @@
     "n3": { "expr": "n1 + n2" }
   },
   "text_template": "Compute the flux of $\\mathbf{F}(x,y)=\\langle x, y^2 \\rangle$ across the segment from $(0,{n1})$ to $({n2},{n3})$ using the right-hand normal vector $\\mathbf{n}(t)=\\langle y'(t), -x'(t) \\rangle$.",
-  "solution_template": "Parameterize the line segment from $(0,{n1})$ to $({n2},{n3})$ by\n$$\\mathbf{r}(t)=\\langle {n2}t,\\ {n1} + ({n3}-{n1})t \\rangle, \\quad 0\\le t\\le 1.$$ Then\n$$\\mathbf{r}'(t)=\\langle {n2},\\ {n3}-{n1} \\rangle.$$ A right-hand normal is\n$$\\mathbf{n}(t)=\\langle y'(t),-x'(t)\\rangle = \\langle {n3}-{n1},\\ -{n2} \\rangle.$$ Evaluate\n$$\\mathbf{F}(\\mathbf{r}(t)) = \\left\\langle {n2}t,\\ \\big({n1}+({n3}-{n1})t\\big)^2 \\right\\rangle,$$ so the integrand is\n$$\\mathbf{F}(\\mathbf{r}(t))\\cdot \\mathbf{n}(t) = {n2}t({n3}-{n1}) - {n2}\\big({n1}+({n3}-{n1})t\\big)^2.$$ The flux is\n$$\\int_0^1 \\mathbf{F}(\\mathbf{r}(t))\\cdot \\mathbf{n}(t)\\,dt,$$ which can be computed by expanding and integrating term by term."
+	"solution_template": "Parameterize the line segment from $(0,{n1})$ to $({n2},{n3})$ by  
+	$$\mathbf{r}(t)=\langle {n2}t,\ {n1} + ({n3}-{n1})t \rangle,\quad 0\le t\le 1.$$  
+	Then  
+	$$\mathbf{r}'(t)=\langle {n2},\ {n3}-{n1} \rangle,$$  
+	and a right-hand normalis  
+	$$\mathbf{n}(t)=\langle y'(t),-x'(t)\rangle=\langle {n3}-{n1},\ -{n2}\rangle.$$
+
+	Evaluate  
+	$$\mathbf{F}(\mathbf{r}(t))=\left\langle {n2}t,\ \big({n1}+({n3}-{n1})t\big)^2 \right\rangle.$$
+
+	The flux is  
+	$$\Phi=\int_0^1 \mathbf{F}(\mathbf{r}(t))\cdot\mathbf{n}(t)\,dt.$$
+
+	Compute the dot product:  
+	$$\mathbf{F}(\mathbf{r}(t))\cdot\mathbf{n}(t)= {n2}t({n3}-{n1}) - {n2}\big({n1}+({n3}-{n1})t\big)^2.$$
+
+	Factor out $-{n2}$ for easier integration:  
+	$$\Phi=-{n2}\int_0^1 \Big({n1}+({n3}-{n1})t\Big)^2\,dt \;+\; {n2}({n3}-{n1})\int_0^1 t\,dt.$$
+
+	Compute each piece:
+
+	1.  
+	$$\int_0^1 t\,dt = \frac12.$$
+
+	2.  
+	Let $A={n1}$ and $B={n3}-{n1}$. Then  
+	$$\int_0^1 (A + Bt)^2\,dt = A^2 + AB + \frac{B^2}{3}.$$
+
+	Putting everything together:  
+	$$\Phi = -{n2}\!\left({n1}^2 + {n1}({n3}-{n1}) + \frac{({n3}-{n1})^2}{3}\right)  
+	\ +\ \frac{{n2}({n3}-{n1})}{2}.$$
+
+	This expression simplifies correctly to the flux for the given vector field and segment."
+
 },
 {
   "id": "M2760_CIRC_N1",
