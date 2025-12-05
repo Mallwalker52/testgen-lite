@@ -414,16 +414,23 @@ col_bank, col_test = st.columns(2)
 with col_bank:
     st.subheader("Question Bank")
 
+    # --- Filtered question list ---
     bank_qs = filtered_questions(
         course_filter, static_filter, qtype_filter, topic_filter, search_text
     )
 
     if not bank_qs:
         st.write("No questions match the current filter.")
-    else:
-        options = [f"{q['id']} – {get_label_topic(q)}" for q in bank_qs]
-        id_by_label = {f"{q['id']} – {get_label_topic(q)}": q["id"] for q in bank_qs}
 
+    else:
+        # Labels for multiselect
+        options = [f"{q['id']} – {get_label_topic(q)}" for q in bank_qs]
+        id_by_label = {
+            f"{q['id']} – {get_label_topic(q)}": q["id"]
+            for q in bank_qs
+        }
+
+        # Select questions
         selected_labels = st.multiselect(
             "Select questions to add",
             options=options,
@@ -435,71 +442,78 @@ with col_bank:
             add_to_test(ids_to_add)
             st.rerun()
 
-        # Preview from bank
-with st.expander("Preview from bank"):
-    preview_label = st.selectbox(
-        "Choose a question to preview",
-        options=["(none)"] + options,
-        key="bank_preview_select",
-    )
+        # --------------------------
+        # PREVIEW FROM BANK (moved back INSIDE LEFT COLUMN)
+        # --------------------------
+        with st.expander("Preview from bank"):
+            preview_label = st.selectbox(
+                "Choose a question to preview",
+                options=["(none)"] + options,
+                key="bank_preview_select",
+            )
 
-    if preview_label != "(none)":
-        qid = id_by_label[preview_label]
-        q = Q_BY_ID.get(qid)
+            if preview_label != "(none)":
+                qid = id_by_label[preview_label]
+                q = Q_BY_ID.get(qid)
 
-        if q:
-            # Basic metadata
-            st.markdown(f"**ID:** {q.get('id', qid)}")
+                if q:
+                    # ---- Metadata ----
+                    st.markdown(f"**ID:** {q.get('id', qid)}")
 
-            courses = ", ".join(q.get("courses", []))
-            if courses:
-                st.markdown(f"**Courses:** {courses}")
+                    courses = ", ".join(q.get("courses", []))
+                    if courses:
+                        st.markdown(f"**Courses:** {courses}")
 
-            qtypes = ", ".join(q.get("qtypes", []))
-            if qtypes:
-                st.markdown(f"**Types:** {qtypes}")
+                    qtypes = ", ".join(q.get("qtypes", []))
+                    if qtypes:
+                        st.markdown(f"**Types:** {qtypes}")
 
-            topics = ", ".join(get_question_topics(q))
-            if topics:
-                st.markdown(f"**Topics:** {topics}")
+                    topics = ", ".join(get_question_topics(q))
+                    if topics:
+                        st.markdown(f"**Topics:** {topics}")
 
-            is_static = q.get("static", True)
-            static_label = "Static" if is_static else "Non-static (algorithmic)"
-            st.markdown(f"**Static / Non-static:** {static_label}")
+                    is_static = q.get("static", True)
+                    static_label = "Static" if is_static else "Non-static (algorithmic)"
+                    st.markdown(f"**Static / Non-static:** {static_label}")
 
-            # --- Build a preview text/solution ---------------------
+                    # ---- Build preview text/solution ----
+                    preview_text = q.get("text", "")
+                    preview_solution = q.get("solution", "")
 
-            # Start from base text/solution if present
-            preview_text = q.get("text", "")
-            preview_solution = q.get("solution", "")
+                    # Variant-based (old style)
+                    variants = q.get("variants", [])
 
-            # If this is a variant-based question, just preview base text
-            # (or you could preview the first variant if you really want)
-            variants = q.get("variants", [])
+                    # Param-based (new style)
+                    if "params" in q and isinstance(q.get("params"), dict):
+                        sample_params = generate_params_for_question(q)
 
-            # If this is a param-based question, generate sample params
-            if "params" in q and isinstance(q.get("params"), dict):
-                sample_params = generate_params_for_question(q)
+                        if "text_template" in q:
+                            preview_text = render_template(
+                                q["text_template"], sample_params
+                            )
+                        if "solution_template" in q:
+                            preview_solution = render_template(
+                                q["solution_template"], sample_params
+                            )
 
-                if "text_template" in q:
-                    preview_text = render_template(q["text_template"], sample_params)
-                if "solution_template" in q:
-                    preview_solution = render_template(
-                        q["solution_template"], sample_params
-                    )
+                    # ---- Display question ----
+                    if preview_text:
+                        st.markdown("**Question:**")
+                        st.markdown(preview_text)
+                    else:
+                        st.markdown("_No question text defined for this item._")
 
-            # --- Display question / solution or fallback message ----
-            if preview_text:
-                st.markdown("**Question:**")
-                st.markdown(preview_text)
-            else:
-                st.markdown("_No question text defined for this item._")
+                    # ---- Display solution ----
+                    if preview_solution:
+                        st.markdown("**Solution (one possible):**")
+                        st.markdown(preview_solution)
+                    else:
+                        st.markdown("_No solution text defined for this item._")
 
-            if preview_solution:
-                st.markdown("**Solution (one possible):**")
-                st.markdown(preview_solution)
-            else:
-                st.markdown("_No solution text defined for this item._")
+                    # ---- Add-from-preview button ----
+                    if st.button("Add this question to test", key=f"add_from_preview_{qid}"):
+                        add_to_test([qid])
+                        st.rerun()
 
 
 
