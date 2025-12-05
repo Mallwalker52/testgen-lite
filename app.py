@@ -113,21 +113,37 @@ def add_to_test(ids_to_add):
         instances.append({"qid": qid, "variant": variant_idx})
 
 
-def move_up(index):
+def move_up(index: int):
     if index <= 0 or index >= len(instances):
         return
     instances[index - 1], instances[index] = instances[index], instances[index - 1]
 
 
-def move_down(index):
+def move_down(index: int):
     if index < 0 or index >= len(instances) - 1:
         return
     instances[index + 1], instances[index] = instances[index], instances[index + 1]
 
 
-def remove_from_test(index):
+def remove_from_test(index: int):
     if 0 <= index < len(instances):
         instances.pop(index)
+
+
+def regenerate_variant(index: int):
+    """Pick a new variant for the given instance, if possible."""
+    if index < 0 or index >= len(instances):
+        return
+    inst_obj = instances[index]
+    base = Q_BY_ID.get(inst_obj["qid"])
+    if not base or base.get("static", True):
+        return
+    variants = base.get("variants", [])
+    if not variants:
+        return
+    current = inst_obj.get("variant")
+    choices = [i for i in range(len(variants)) if i != current] or list(range(len(variants)))
+    inst_obj["variant"] = random.choice(choices)
 
 
 def get_instance_question(inst_obj):
@@ -229,7 +245,9 @@ col_bank, col_test = st.columns(2)
 with col_bank:
     st.subheader("Question Bank")
 
-    bank_qs = filtered_questions(course_filter, static_filter, qtype_filter, topic_filter, search_text)
+    bank_qs = filtered_questions(
+        course_filter, static_filter, qtype_filter, topic_filter, search_text
+    )
 
     if not bank_qs:
         st.write("No questions match the current filter.")
@@ -246,6 +264,7 @@ with col_bank:
         if st.button("Add selected to test"):
             ids_to_add = [id_by_label[label] for label in selected_labels]
             add_to_test(ids_to_add)
+            st.rerun()
 
         # Preview from bank
         with st.expander("Preview from bank"):
@@ -288,6 +307,11 @@ with col_bank:
                         else:
                             st.write("No text or variants defined for this question.")
 
+                    # Add this single question directly from preview
+                    if st.button("Add this question to test", key=f"add_single_{qid}"):
+                        add_to_test([qid])
+                        st.rerun()
+
 
 # =======================
 # Right column: Current Test
@@ -312,19 +336,25 @@ with col_test:
                 st.caption("Static" if is_static else "Non-static (algorithmic)")
                 st.markdown(inst_q.get("text", ""))
 
-                bcol1, bcol2, bcol3 = st.columns(3)
+                # Controls
+                bcol1, bcol2, bcol3, bcol4 = st.columns(4)
                 with bcol1:
                     if st.button("⬆️ Up", key=f"up_{idx}"):
                         move_up(idx)
-                        st.experimental_rerun()
+                        st.rerun()
                 with bcol2:
                     if st.button("⬇️ Down", key=f"down_{idx}"):
                         move_down(idx)
-                        st.experimental_rerun()
+                        st.rerun()
                 with bcol3:
                     if st.button("🗑 Remove", key=f"remove_{idx}"):
                         remove_from_test(idx)
-                        st.experimental_rerun()
+                        st.rerun()
+                with bcol4:
+                    if not is_static:
+                        if st.button("♻️ Regenerate", key=f"regen_{idx}"):
+                            regenerate_variant(idx)
+                            st.rerun()
 
     st.markdown("---")
     st.subheader("Export")
