@@ -79,14 +79,26 @@
   "id": "M2760_CONSERVATIVE_N1",
   "courses": ["Math 2760"],
   "static": false,
-  "qtypes": ["Open-ended", "Algorithmic", "Conceptual"],
+  "qtypes": ["Open-ended", "Algorithmic", "Computational"],
   "topics": ["Conservative fields", "Potential functions", "Line integrals"],
   "params": {
-    "n1": { "min": 3, "max": 8 }
+    "n1": { "min": 3, "max": 8 },
+
+    "A": { "expr": "2 - n1" },
+    "B": { "expr": "1 - n1" },
+
+    "f2": { "expr": "A*ln(2) + 8*A*A" },
+    "f1": { "expr": "B*ln(1) + B*B" },
+
+    "int_raw": { "expr": "f2 - f1" },
+    "int_val": { "expr": "round(int_raw, 3)" }
   },
-  "text_template": "Consider the vector field $\\mathbf{F}(x,y)=\\langle \\ln(y)+2xy^3,\\ x/y+3x^2 y^2 \\rangle$.\n\nA. Verify that $\\mathbf{F}$ is conservative.\n\nB. Find a potential function $f(x,y)$ such that $\\nabla f = \\mathbf{F}$.\n\nC. Evaluate the line integral $\\displaystyle \\int_C \\mathbf{F}\\cdot d\\mathbf{r}$ along the curve $\\mathbf{r}(t)=\\langle t-{n1},\\ t \\rangle$ for $1\\le t\\le 2$ using the Fundamental Theorem for Line Integrals.",
-  "solution_template": "Write the field as $\\mathbf F(x,y)=\\langle P(x,y),Q(x,y)\\rangle$ with\n$$P(x,y)=\\ln(y)+2xy^3, \\qquad Q(x,y)=x/y+3x^2y^2.$$ \nCompute partial derivatives:\n$$P_y = 1/y + 6xy^2, \\qquad Q_x = 1/y + 6xy^2.$$ \nSince $P_y = Q_x$ on y>0, the field is conservative.\n\nTo find a potential f, integrate P with respect to x:\n$$f(x,y)=\\int (\\ln y + 2xy^3)\\,dx = x\\ln y + x^2y^3 + g(y).$$\nDifferentiate with respect to y:\n$$f_y = x/y + 3x^2y^2 + g'(y).$$\nSet equal to Q:\n$$x/y + 3x^2y^2 + g'(y) = x/y + 3x^2y^2,$$\nso $g'(y)=0$. A potential is therefore\n$$f(x,y)=x\\ln y + x^2y^3.$$\n\nFor $\\mathbf r(t)=\\langle t-{n1}, t\\rangle$, the Fundamental Theorem gives\n$$\\int_C \\mathbf F\\cdot d\\mathbf r = f(\\mathbf r(2)) - f(\\mathbf r(1)).$$\nWe have\n$$\\mathbf r(2) = \\langle 2-{n1},\\ 2\\rangle, \\qquad \\mathbf r(1) = \\langle 1-{n1},\\ 1\\rangle.$$ \nThus\n$$f(\\mathbf r(2)) = (2-{n1})\\ln 2 + 8(2-{n1})^2,$$\n$$f(\\mathbf r(1)) = (1-{n1})^2.$$\nSo the line integral is\n$$(2-{n1})\\ln 2 + 8(2-{n1})^2 - (1-{n1})^2.$$ \nSimplifying the polynomial part gives\n$$\\int_C \\mathbf F\\cdot d\\mathbf r = (2-{n1})\\ln 2 + 7{n1}^2 - 30{n1} + 31.$$\nFor a specific value of {n1}, this can be approximated numerically; for example, when {n1} = 3 the value is approximately $3.31$."
-},
+
+  "text_template": "Consider the vector field $$\\mathbf F(x,y)=\\langle \\ln(y)+2xy^3,\\; x/y+3x^2 y^2\\rangle.$$ \nA. Verify that $\\mathbf F$ is conservative. \nB. Find a potential function $f(x,y)$ such that $\\nabla f=\\mathbf F$. \nC. Evaluate the line integral $$\\int_C \\mathbf F\\cdot d\\mathbf r$$ along the curve $$\\mathbf r(t)=\\langle t-{n1},\\; t\\rangle, \\quad 1\\le t\\le 2,$$ using the Fundamental Theorem for Line Integrals.",
+
+  "solution_template": "Write $\\mathbf F=\\langle P,Q\\rangle$ with \n$$P=\\ln(y)+2xy^3, \\qquad Q=x/y+3x^2y^2.$$ \nCompute partial derivatives: \n$$P_y = 1/y + 6xy^2, \qquad Q_x = 1/y + 6xy^2.$$ \nSince $P_y=Q_x$ for $y>0$, the field is conservative.\n\nA potential function comes from integrating $P$ in $x$: \n$$f(x,y)=x\\ln y + x^2y^3.$$ \n\nUsing the Fundamental Theorem for Line Integrals, \n$$\\int_C \\mathbf F\\cdot d\\mathbf r = f(\\mathbf r(2)) - f(\\mathbf r(1)).$$ \nThe curve gives \n$$\\mathbf r(2) = (2-{n1},\,2), \qquad \\mathbf r(1) = (1-{n1},\,1).$$ \nThus the line integral equals \n$$f(2-{n1},2) - f(1-{n1},1).$$ \nThe symbolic value is \n$$\\bigl((2-{n1})\\ln 2 + 8(2-{n1})^2\\bigr) - (1-{n1})^2.$$ \nNumerically this evaluates to \n$$\\int_C \\mathbf F\\cdot d\\mathbf r \\approx {int_val}.$$"
+}
+,
 
 {
   "id": "M2760_CYL_CART_SURFACE",
@@ -128,16 +140,17 @@
 }
 ,
 {
-  "id": "M2760_SPHERE_WEDGE_INT",
+  "id": "M2760_REWRITE_INTEGRAL_N1",
   "courses": ["Math 2760"],
   "static": false,
   "qtypes": ["Open-ended", "Computational"],
-  "topics": ["Triple integrals", "Spherical coordinates"],
+  "topics": ["Triple integrals", "Changing order of integration"],
   "params": {
-    "n1": { "min": 1, "max": 9 }
+    "n1": { "min": 1, "max": 9 },
+    "I_num": { "expr": "12*n1 + 80" }
   },
-  "text_template": "Evaluate the integral\n$$\\iiint_E (x^2 + y^2 + z^2 + {n1})\\,dV,$$\nwhere the region $E$ is described by\n$$0 \\le \\rho \\le 2, \\quad 0 \\le \\phi \\le \\frac{\\pi}{3}, \\quad 0 \\le \\theta \\le \\pi.$$",
-  "solution_template": "Since $x^2 + y^2 + z^2 = \\rho^2$ and $dV = \\rho^2\\sin(\\phi)\\,d\\rho\\,d\\phi\\,d\\theta$, the integrand becomes\n$$(\\rho^2 + {n1})\\rho^2\\sin(\\phi).$$\nIntegrate in $\\rho$:\n$$\\int_0^2 (\\rho^4 + {n1}\\rho^2)\\,d\\rho = 32/5 + 8{n1}/3.$$ \nIntegrate in $\\phi$:\n$$\\int_0^{{\\pi/3}} \\sin(\\phi)\\,d\\phi = 1/2.$$ \nIntegrate in $\\theta$:\n$$\\int_0^{{\\pi}} d\\theta = \\pi.$$ \nThus\n$$I = \\pi\\left(16/5 + 4{n1}/3\\right).$$"
+  "text_template": "Consider the integral\n$$\\int_0^2 \\int_0^x \\int_0^{x+y} f(x,y,z)\\,dz\\,dy\\,dx.$$\nA. Sketch the projection of the region onto the $xy$-plane.\nB. Rewrite the integral in the order $dx\\,dy\\,dz$.\nC. Evaluate the integral if $$f(x,y,z)=x + 2y + 3z + {n1}.$$",
+  "solution_template": "The region is\n$$0 \\le x \\le 2, \\qquad 0 \\le y \\le x, \\qquad 0 \\le z \\le x+y.$$ \nProjection onto the $xy$-plane is the triangle bounded by $y=0$, $y=x$, and $x=2$.\n\nFor part C, evaluate directly:\n$$I = \\int_0^2 \\int_0^x \\int_0^{x+y} (x + 2y + 3z + {n1})\\,dz\\,dy\\,dx.$$ \nIntegrate in $z$:\n$$\\int_0^{x+y}(x+2y+3z+{n1})\\,dz = (x+2y+{n1})(x+y) + \\tfrac32(x+y)^2.$$ \nIntegrate in $y$ and then $x$ to obtain\n$$I = \\frac{{I_num}}{3}.$$"
 }
 
 ]
