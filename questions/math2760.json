@@ -139,6 +139,5 @@
   "text_template": "Evaluate the integral\n$$\\iiint_E (x^2 + y^2 + z^2 + {n1})\\,dV,$$\nwhere the region $E$ is described by\n$$0 \\le \\rho \\le 2, \\quad 0 \\le \\phi \\le \\frac{\\pi}{3}, \\quad 0 \\le \\theta \\le \\pi.$$",
   "solution_template": "Since $x^2 + y^2 + z^2 = \\rho^2$ and $dV = \\rho^2\\sin(\\phi)\\,d\\rho\\,d\\phi\\,d\\theta$, the integrand becomes\n$$(\\rho^2 + {n1})\\rho^2\\sin(\\phi).$$\nIntegrate in $\\rho$:\n$$\\int_0^2 (\\rho^4 + {n1}\\rho^2)\\,d\\rho = 32/5 + 8{n1}/3.$$ \nIntegrate in $\\phi$:\n$$\\int_0^{{\\pi/3}} \\sin(\\phi)\\,d\\phi = 1/2.$$ \nIntegrate in $\\theta$:\n$$\\int_0^{{\\pi}} d\\theta = \\pi.$$ \nThus\n$$I = \\pi\\left(16/5 + 4{n1}/3\\right).$$"
 }
-,
 
 ]
