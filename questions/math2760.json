@@ -83,21 +83,17 @@
   "topics": ["Conservative fields", "Potential functions", "Line integrals"],
   "params": {
     "n1": { "min": 3, "max": 8 },
-
-    "A": { "expr": "2 - n1" },
-    "B": { "expr": "1 - n1" },
-
-    "f2": { "expr": "A*ln(2) + 8*A*A" },
-    "f1": { "expr": "B*ln(1) + B*B" },
-
-    "int_raw": { "expr": "f2 - f1" },
-    "int_val": { "expr": "round(int_raw, 3)" }
+    "int_raw": {
+      "expr": "(2 - n1)*0.6931471805599453 + 7*n1*n1 - 30*n1 + 31"
+    },
+    "int_val": {
+      "expr": "round(int_raw, 3)"
+    }
   },
-
-  "text_template": "Consider the vector field $$\\mathbf F(x,y)=\\langle \\ln(y)+2xy^3,\\; x/y+3x^2 y^2\\rangle.$$ \nA. Verify that $\\mathbf F$ is conservative. \nB. Find a potential function $f(x,y)$ such that $\\nabla f=\\mathbf F$. \nC. Evaluate the line integral $$\\int_C \\mathbf F\\cdot d\\mathbf r$$ along the curve $$\\mathbf r(t)=\\langle t-{n1},\\; t\\rangle, \\quad 1\\le t\\le 2,$$ using the Fundamental Theorem for Line Integrals.",
-
-  "solution_template": "Write $\\mathbf F=\\langle P,Q\\rangle$ with \n$$P=\\ln(y)+2xy^3, \\qquad Q=x/y+3x^2y^2.$$ \nCompute partial derivatives: \n$$P_y = 1/y + 6xy^2, \qquad Q_x = 1/y + 6xy^2.$$ \nSince $P_y=Q_x$ for $y>0$, the field is conservative.\n\nA potential function comes from integrating $P$ in $x$: \n$$f(x,y)=x\\ln y + x^2y^3.$$ \n\nUsing the Fundamental Theorem for Line Integrals, \n$$\\int_C \\mathbf F\\cdot d\\mathbf r = f(\\mathbf r(2)) - f(\\mathbf r(1)).$$ \nThe curve gives \n$$\\mathbf r(2) = (2-{n1},\,2), \qquad \\mathbf r(1) = (1-{n1},\,1).$$ \nThus the line integral equals \n$$f(2-{n1},2) - f(1-{n1},1).$$ \nThe symbolic value is \n$$\\bigl((2-{n1})\\ln 2 + 8(2-{n1})^2\\bigr) - (1-{n1})^2.$$ \nNumerically this evaluates to \n$$\\int_C \\mathbf F\\cdot d\\mathbf r \\approx {int_val}.$$"
+  "text_template": "Consider the vector field $\\mathbf{F}(x,y)=\\langle \\ln(y)+2xy^3,\\ x/y+3x^2 y^2 \\rangle$.\n\nA. Verify that $\\mathbf{F}$ is conservative.\n\nB. Find a potential function $f(x,y)$ such that $\\nabla f = \\mathbf{F}$.\n\nC. Evaluate the line integral $\\displaystyle \\int_C \\mathbf{F}\\cdot d\\mathbf{r}$ along the curve $\\mathbf{r}(t)=\\langle t-{n1},\\ t \\rangle$ for $1\\le t\\le 2$ using the Fundamental Theorem for Line Integrals.",
+  "solution_template": "Write $\\mathbf F(x,y)=\\langle P(x,y),Q(x,y)\\rangle$ with\n$$P(x,y)=\\ln(y)+2xy^3, \\qquad Q(x,y)=x/y+3x^2y^2.$$ \nCompute partial derivatives:\n$$P_y = 1/y + 6xy^2, \\qquad Q_x = 1/y + 6xy^2.$$ \nSince $P_y = Q_x$ for $y>0$, the field is conservative.\n\nTo find a potential $f$, integrate $P$ with respect to $x$:\n$$f(x,y)=\\int (\\ln y + 2xy^3)\\,dx = x\\ln y + x^2y^3 + g(y).$$\nDifferentiate with respect to $y$:\n$$f_y = x/y + 3x^2y^2 + g'(y).$$\nSet this equal to $Q$:\n$$x/y + 3x^2y^2 + g'(y) = x/y + 3x^2y^2,$$\nso $g'(y)=0$ and we may take\n$$f(x,y)=x\\ln y + x^2y^3.$$\n\nFor $\\mathbf r(t)=\\langle t-{n1}, t\\rangle$ with $1\\le t\\le 2$, the Fundamental Theorem for Line Integrals gives\n$$\\int_C \\mathbf F\\cdot d\\mathbf r = f(\\mathbf r(2)) - f(\\mathbf r(1)).$$\nHere\n$$\\mathbf r(2) = (2-{n1}, 2), \\qquad \\mathbf r(1) = (1-{n1}, 1).$$\nThus the line integral equals\n$$f(2-{n1},2) - f(1-{n1},1) = (2-{n1})\\ln 2 + 8(2-{n1})^2 - (1-{n1})^2.$$\nSymbolically, this simplifies to\n$$(2-{n1})\\ln 2 + 7{n1}^2 - 30{n1} + 31.$$\nNumerically, for the generated value of $n_1$ the integral is approximately\n$$\\int_C \\mathbf F\\cdot d\\mathbf r \\approx {int_val}.$$"
 }
+
 ,
 {
   "id": "M2760_CYL_CART_SURFACE",
