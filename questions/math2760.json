@@ -89,31 +89,31 @@
 }
 ,
 
-  {
-    "id": "M2760_CYL_CART_SURFACE",
-    "courses": ["Math 2760"],
-    "static": true,
-    "qtypes": ["Open-ended"],
-    "topics": ["Cylindrical coordinates", "Coordinate conversions"],
-    "params": {
-      "n1": { "min": 1, "max": 9 }
-    },
-    "text_template": "Consider the equation $$r = {n1} \\\\cos(\\\\theta)$$ in cylindrical coordinates.\nA. Convert the equation from cylindrical to Cartesian coordinates.\nB. Identify the surface.",
-    "solution_template": "In cylindrical coordinates, $x=r\\\\cos(\\\\theta)$ and $y=r\\\\sin(\\\\theta)$ with $r^2=x^2+y^2$.\nStart from\n$$r = {n1}\\\\cos(\\\\theta).$$\nMultiply both sides by $r$:\n$$r^2 = {n1}r\\\\cos(\\\\theta).$$\nUse $r\\\\cos(\\\\theta)=x$:\n$$x^2 + y^2 = {n1}x.$$ \nComplete the square:\n$$(x - {n1}/2)^2 + y^2 = ({n1}/2)^2.$$\nThis describes a circular cylinder of radius ${n1}/2$ whose axis is the line $x={n1}/2$, parallel to the $z$-axis."
+{
+  "id": "M2760_CYL_CART_SURFACE",
+  "courses": ["Math 2760"],
+  "static": true,
+  "qtypes": ["Open-ended"],
+  "topics": ["Cylindrical coordinates", "Coordinate conversions"],
+  "params": {
+    "n1": { "min": 1, "max": 9 }
   },
+  "text_template": "Consider the equation $$r = {n1} \\\\cos(\\\\theta)$$ in cylindrical coordinates.\nA. Convert the equation from cylindrical to Cartesian coordinates.\nB. Identify the surface.",
+  "solution_template": "In cylindrical coordinates, $x = r\\\\cos(\\\\theta)$ and $y = r\\\\sin(\\\\theta)$ with $r^2 = x^2 + y^2$.\nStart from\n$$r = {n1} \\\\cos(\\\\theta).$$\nMultiply both sides by $r$:\n$$r^2 = {n1}r\\\\cos(\\\\theta).$$\nUse $r\\\\cos(\\\\theta) = x$:\n$$x^2 + y^2 = {n1}x.$$ \nComplete the square:\n$$(x - {n1}/2)^2 + y^2 = ({n1}/2)^2.$$\nThis describes a circular cylinder of radius ${n1}/2$ whose axis is the line $x = {n1}/2$, parallel to the $z$-axis."
+},
 
-  {
-    "id": "M2760_SPHERE_CART_SURFACE",
-    "courses": ["Math 2760"],
-    "static": true,
-    "qtypes": ["Open-ended"],
-    "topics": ["Spherical coordinates", "Coordinate conversions"],
-    "params": {
-      "n1": { "min": 1, "max": 9 }
-    },
-    "text_template": "Consider the equation $$\\\\rho = {n1}\\\\sin(\\\\phi)$$ in spherical coordinates.\nA. Convert the equation from spherical to Cartesian coordinates.\nB. Identify the surface.",
-    "solution_template": "Use $r=\\\\sqrt{x^2+y^2}$ and $\\\\rho^2=r^2+z^2$.\nStart from\n$$\\\\rho = {n1}\\\\sin(\\\\phi).$$\nSince $\\\\sin(\\\\phi)=r/\\\\rho$, we obtain\n$$\\\\rho = {n1}r/\\\\rho \\\\implies \\\\rho^2={n1}r.$$ \nSubstitute $\\\\rho^2=r^2+z^2$:\n$$r^2 + z^2 = {n1}r.$$ \nComplete the square:\n$$(r - {n1}/2)^2 + z^2 = ({n1}/2)^2.$$ \nReplacing $r$ with $\\\\sqrt{x^2+y^2}$ gives the Cartesian equation\n$$(\\\\sqrt{x^2+y^2}-{n1}/2)^2 + z^2 = ({n1}/2)^2.$$\nThis is a horn torus formed by revolving the circle in the $rz$-plane about the $z$-axis."
+ {
+  "id": "M2760_SPHERE_CART_SURFACE",
+  "courses": ["Math 2760"],
+  "static": true,
+  "qtypes": ["Open-ended"],
+  "topics": ["Spherical coordinates", "Coordinate conversions"],
+  "params": {
+    "n1": { "min": 1, "max": 9 }
   },
+  "text_template": "Consider the equation $$\\\\rho = {n1}\\\\sin(\\\\phi)$$ in spherical coordinates.\nA. Convert the equation from spherical to Cartesian coordinates.\nB. Identify the surface.",
+  "solution_template": "Use $r = \\\\sqrt{x^2 + y^2}$ and $\\\\rho^2 = r^2 + z^2$.\nStart from\n$$\\\\rho = {n1}\\\\sin(\\\\phi).$$\nSince $\\\\sin(\\\\phi) = r/\\\\rho$, we obtain\n$$\\\\rho = {n1} \\\\frac{r}{\\\\rho} \\\\implies \\\\rho^2 = {n1}r.$$\nSubstitute $\\\\rho^2 = r^2 + z^2$:\n$$r^2 + z^2 = {n1}r.$$\nComplete the square:\n$$(r - {n1}/2)^2 + z^2 = ({n1}/2)^2.$$\nReplacing $r$ with $\\\\sqrt{x^2 + y^2}$ gives the Cartesian equation\n$$(\\\\sqrt{x^2 + y^2} - {n1}/2)^2 + z^2 = ({n1}/2)^2.$$\nThis is a horn torus formed by revolving the circle in the $rz$-plane about the $z$-axis."
+},
 
 {
   "id": "M2760_REWRITE_INTEGRAL_N1",
@@ -125,8 +125,9 @@
     "n1": { "min": 1, "max": 9 }
   },
   "text_template": "Consider the integral\n$$\\int_0^2 \\int_0^x \\int_0^{x+y} f(x,y,z)\\,dz\\,dy\\,dx.$$\nA. Sketch the projection of the region onto the $xy$-plane.\nB. Rewrite the integral in the order $dx\\,dy\\,dz$.\nC. Evaluate the integral if $$f(x,y,z)=x + 2y + 3z + {n1}.$$",
-  "solution_template": "The region is\n$$0 \\le x \\le 2, \\qquad 0 \\le y \\le x, \\qquad 0 \\le z \\le x+y.$$ \nProjection onto the $xy$-plane is the triangle bounded by $y=0$, $y=x$, and $x=2$.\n\nFor part C, evaluate directly:\n$$I = \\int_0^2 \\int_0^x \\int_0^{x+y} (x + 2y + 3z + {n1})\\,dz\\,dy\\,dx.$$ \nIntegrate in $z$:\n$$\\int_0^{x+y}(x+2y+3z+{n1})dz = (x+2y+{n1})(x+y) + \\tfrac32(x+y)^2.$$ \nIntegrate in $y$ and then $x$ to obtain\n$$I = 4{n1} + \\frac{80}{3}.$$"
+  "solution_template": "The region is\n$$0 \\le x \\le 2, \\qquad 0 \\le y \\le x, \\qquad 0 \\le z \\le x+y.$$ \nThe projection onto the $xy$-plane is the triangular region bounded by $y=0$, $y=x$, and $x=2$.\n\nFor part C, evaluate\n$$I = \\int_0^2 \\int_0^x \\int_0^{x+y} (x + 2y + 3z + {n1})\\,dz\\,dy\\,dx.$$ \nIntegrate with respect to $z$:\n$$(x+2y+{n1})(x+y) + \\tfrac32(x+y)^2.$$\nIntegrating over $y$ and then $x$ gives the final result\n$$I = 4{n1} + \\frac{80}{3}.$$"
 }
+
 ,
 
 {
@@ -141,20 +142,21 @@
   "text_template": "Evaluate the integral\n$$\\iiint_E (x^2 + y^2 + z^2 + {n1})\\,dV,$$\nwhere the region $E$ is described by\n$$0 \\le \\rho \\le 2, \\quad 0 \\le \\phi \\le \\frac{\\pi}{3}, \\quad 0 \\le \\theta \\le \\pi.$$",
   "solution_template": "Since $x^2+y^2+z^2=\\rho^2$ and $dV=\\rho^2\\sin(\\phi)d\\rho d\\phi d\\theta$, the integrand becomes\n$$(\\rho^2+{n1})\\rho^2\\sin(\\phi).$$\nIntegrate in $\\rho$:\n$$\\int_0^2 (\\rho^4 + {n1}\\rho^2)d\\rho = \\frac{32}{5}+\\frac{8{n1}}{3}.$$ \nIntegrate in $\\phi$:\n$$\\int_0^{\\pi/3} \\sin(\\phi)d\\phi = \\tfrac12.$$ \nIntegrate in $\\theta$:\n$$\\int_0^{\\pi} d\\theta = \\pi.$$ \nThus\n$$I = \\pi\\left(\\frac{16}{5} + \\frac{4{n1}}{3}\\right).$$"
 }
-,
+  ,
 
 {
-  "id": "M2760_LINE_INT_ARCLENGTH",
+  "id": "M2760_SPHERE_WEDGE_INT",
   "courses": ["Math 2760"],
   "static": false,
   "qtypes": ["Open-ended", "Computational"],
-  "topics": ["Line integrals", "Arc length"],
+  "topics": ["Triple integrals", "Spherical coordinates"],
   "params": {
     "n1": { "min": 1, "max": 9 }
   },
-  "text_template": "Let $C$ be the curve\n$$\\mathbf r(t)=\\langle t, t^2, t^3 \\rangle, \\quad 0 \\le t \\le 1.$$ \nEvaluate the line integral\n$$\\int_C (x + y + z + {n1})ds,$$\nusing the definition\n$$\\int_C f(x,y,z)ds = \\int_0^1 f(\\mathbf r(t))\\|\\mathbf r'(t)\\|dt.$$",
-  "solution_template": "Compute\n$$\\mathbf r'(t)=\\langle 1, 2t, 3t^2 \\rangle,$$\nso\n$$\\|\\mathbf r'(t)\\| = \\sqrt{1 + 4t^2 + 9t^4}.$$ \nAlong the curve,\n$$f(\\mathbf r(t)) = t + t^2 + t^3 + {n1}.$$ \nThus the line integral becomes\n$$\\int_0^1 (t + t^2 + t^3 + {n1})\\sqrt{1 + 4t^2 + 9t^4}dt.$$ \nThis integral does not have an elementary antiderivative, so this expression is the evaluated form using the definition of the line integral with respect to arc length."
+  "text_template": "Evaluate the integral\n$$\\iiint_E (x^2 + y^2 + z^2 + {n1})\\,dV,$$\nwhere the region $E$ is described by\n$$0 \\le \\rho \\le 2, \\quad 0 \\le \\phi \\le \\frac{\\pi}{3}, \\quad 0 \\le \\theta \\le \\pi.$$",
+  "solution_template": "Since $x^2 + y^2 + z^2 = \\rho^2$ and $dV = \\rho^2\\sin(\\phi)\\,d\\rho\\,d\\phi\\,d\\theta$, the integrand becomes\n$$(\\rho^2 + {n1})\\rho^2\\sin(\\phi).$$\nIntegrate in $\\rho$:\n$$\\int_0^2 (\\rho^4 + {n1}\\rho^2)\\,d\\rho = \\frac{{32}}{{5}} + \\frac{8{n1}}{{3}}.$$ \nIntegrate in $\\phi$:\n$$\\int_0^{\\pi/3} \\sin(\\phi)\\,d\\phi = \\tfrac12.$$ \nIntegrate in $\\theta$:\n$$\\int_0^{\\pi} d\\theta = \\pi.$$ \nThus\n$$I = \\pi\\left(\\frac{{16}}{{5}} + \\frac{4{n1}}{{3}}\\right).$$"
 }
+
 
 
 ]
