@@ -85,7 +85,7 @@
     "n1": { "min": 3, "max": 8 }
   },
   "text_template": "Consider the vector field $\\mathbf{F}(x,y)=\\langle \\ln(y)+2xy^3,\\ x/y+3x^2 y^2 \\rangle$.\n\nA. Verify that $\\mathbf{F}$ is conservative.\n\nB. Find a potential function $f(x,y)$ such that $\\nabla f = \\mathbf{F}$.\n\nC. Evaluate the line integral $\\displaystyle \\int_C \\mathbf{F}\\cdot d\\mathbf{r}$ along the curve $\\mathbf{r}(t)=\\langle t-{n1},\\ t \\rangle$ for $1\\le t\\le 2$ using the Fundamental Theorem for Line Integrals.",
-  "solution_template": "Write the field as $\\mathbf F(x,y)=\\langle P(x,y),Q(x,y)\\rangle$ with\n$$P(x,y)=\\ln(y)+2xy^3, \\qquad Q(x,y)=x/y+3x^2y^2.$$ \nCompute partial derivatives:\n$$P_y = 1/y + 6xy^2, \\qquad Q_x = 1/y + 6xy^2.$$ \nSince $P_y = Q_x$ on y>0, the field is conservative.\n\nTo find a potential f, integrate P with respect to x:\n$$f(x,y)=\\int (\\ln y + 2xy^3)dx = x\\ln y + x^2y^3 + g(y).$$\nDifferentiate with respect to y:\n$$f_y = x/y + 3x^2y^2 + g'(y).$$\nSet equal to Q:\n$$x/y + 3x^2y^2 + g'(y) = x/y + 3x^2y^2,$$\nso g'(y)=0. A potential is therefore\n$$f(x,y)=x\\ln y + x^2y^3.$$\n\nFor $\\mathbf r(t)=\\langle t-{n1}, t\\rangle$, the Fundamental Theorem gives\n$$\\int_C \\mathbf F\\cdot d\\mathbf r = f(\\mathbf r(2)) - f(\\mathbf r(1)).$$"
+  "solution_template": "Write the field as $\\mathbf F(x,y)=\\langle P(x,y),Q(x,y)\\rangle$ with\n$$P(x,y)=\\ln(y)+2xy^3, \\qquad Q(x,y)=x/y+3x^2y^2.$$ \nCompute partial derivatives:\n$$P_y = 1/y + 6xy^2, \\qquad Q_x = 1/y + 6xy^2.$$ \nSince $P_y = Q_x$ on y>0, the field is conservative.\n\nTo find a potential f, integrate P with respect to x:\n$$f(x,y)=\\int (\\ln y + 2xy^3)dx = x\\ln y + x^2y^3 + g(y).$$\nDifferentiate with respect to y:\n$$f_y = x/y + 3x^2y^2 + g'(y).$$\nSet equal to Q:\n$$x/y + 3x^2y^2 + g'(y) = x/y + 3x^2y^2,$$\nso g'(y)=0. A potential is therefore\n$$f(x,y)=x\\ln y + x^2y^3.$$\n\nFor $\\mathbf r(t)=\\langle t-{n1},\\ t\\rangle$, the Fundamental Theorem gives\n$$\\int_C \\mathbf F\\cdot d\\mathbf r = f(\\mathbf r(2)) - f(\\mathbf r(1)).$$\nSubstitute the endpoints:\n$$f(\\mathbf r(2)) = (2-{n1})\\ln 2 + 8(2-{n1})^2,$$\n$$f(\\mathbf r(1)) = (1-{n1})^2.$$\nThus the value of the line integral is\n$$ (2-{n1})\\ln 2 + 8(2-{n1})^2 - (1-{n1})^2. $$"
 }
 ,
 
@@ -98,8 +98,8 @@
   "params": {
     "n1": { "min": 1, "max": 9 }
   },
-  "text_template": "Consider the equation $$r = {n1} \\\\cos(\\\\theta)$$ in cylindrical coordinates.\nA. Convert the equation from cylindrical to Cartesian coordinates.\nB. Identify the surface.",
-  "solution_template": "In cylindrical coordinates, $x = r\\\\cos(\\\\theta)$ and $y = r\\\\sin(\\\\theta)$ with $r^2 = x^2 + y^2$.\nStart from\n$$r = {n1} \\\\cos(\\\\theta).$$\nMultiply both sides by $r$:\n$$r^2 = {n1} r \\\\cos(\\\\theta).$$\nUse $r\\\\cos(\\\\theta) = x$:\n$$x^2 + y^2 = {n1} x.$$ \nComplete the square:\n$$(x - {n1}/2)^2 + y^2 = ({n1}/2)^2.$$\nThis describes a circular cylinder of radius {n1}/2 whose axis is the line $x = {n1}/2$, parallel to the $z$-axis."
+  "text_template": "Consider the equation $$r = {n1} \\cos(\\theta)$$ in cylindrical coordinates.\nA. Convert the equation from cylindrical to Cartesian coordinates.\nB. Identify the surface.",
+  "solution_template": "In cylindrical coordinates, $x = r\\cos(\\theta)$ and $y = r\\sin(\\theta)$ with $r^2 = x^2 + y^2$.\nStart from\n$$r = {n1} \\cos(\\theta).$$\nMultiply both sides by $r$:\n$$r^2 = {n1} r \\cos(\\theta).$$\nUse $r\\\\cos(\\\\theta) = x$:\n$$x^2 + y^2 = {n1} x.$$ \nComplete the square:\n$$(x - {n1}/2)^2 + y^2 = ({n1}/2)^2.$$\nThis describes a circular cylinder of radius {n1}/2 whose axis is the line $x = {n1}/2$, parallel to the $z$-axis."
 },
 
 {
@@ -111,8 +111,8 @@
   "params": {
     "n1": { "min": 1, "max": 9 }
   },
-  "text_template": "Consider the equation $$\\\\rho = {n1}\\\\sin(\\\\phi)$$ in spherical coordinates.\nA. Convert the equation from spherical to Cartesian coordinates.\nB. Identify the surface.",
-  "solution_template": "Use $r^2 = x^2 + y^2$ and $\\\\rho^2 = r^2 + z^2$.\nStart from\n$$\\\\rho = {n1}\\\\sin(\\\\phi).$$\nSince $\\\\sin(\\\\phi) = r/\\\\rho$, we obtain\n$$\\\\rho = {n1} \\\\frac{r}{\\\\rho} \\\\implies \\\\rho^2 = {n1} r.$$\nSubstitute $\\\\rho^2 = r^2 + z^2$:\n$$r^2 + z^2 = {n1} r.$$\nComplete the square:\n$$(r - {n1}/2)^2 + z^2 = ({n1}/2)^2.$$\nReplacing $r$ with $sqrt(x^2 + y^2)$ gives the Cartesian equation\n$$(sqrt(x^2 + y^2) - {n1}/2)^2 + z^2 = ({n1}/2)^2.$$\nThis is a horn torus formed by revolving the circle in the $rz$-plane about the $z$-axis."
+  "text_template": "Consider the equation $$\\rho = {n1}\\sin(\\phi)$$ in spherical coordinates.\nA. Convert the equation from spherical to Cartesian coordinates.\nB. Identify the surface.",
+  "solution_template": "Use $r^2 = x^2 + y^2$ and $\\rho^2 = r^2 + z^2$.\nStart from\n$$\\rho = {n1}\\sin(\\phi).$$\nSince $\\sin(\\phi) = r/\\rho$, we obtain\n$$\\rho = {n1} \\frac{r}{\\rho} \\implies \\rho^2 = {n1} r.$$\nSubstitute $\\\\rho^2 = r^2 + z^2$:\n$$r^2 + z^2 = {n1} r.$$\nComplete the square:\n$$(r - {n1}/2)^2 + z^2 = ({n1}/2)^2.$$\nReplacing $r$ with $sqrt(x^2 + y^2)$ gives the Cartesian equation\n$$(sqrt(x^2 + y^2) - {n1}/2)^2 + z^2 = ({n1}/2)^2.$$\nThis is a horn torus formed by revolving the circle in the $rz$-plane about the $z$-axis."
 }
 ,
 
